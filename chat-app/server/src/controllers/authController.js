@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken'
 import User from '../models/userModel.js'
+import bcrypt from 'bcryptjs'
 
 dotenv.config()
 
@@ -48,4 +49,17 @@ export const register = async (req, res) => {
 		console.log(err)
 		return res.status(500).json({ message: `Ошибка регистрации: ${err.message}` })
 	}
+}
+
+export const login = async (req, res) => {
+	const { username, password } = req.body
+	const user = await User.findOne({ name: username })
+	if (!user) return res.status(400).json({ msg: 'No such user' })
+	const valid = await bcrypt.compare(password, user.password)
+	if (!valid) return res.status(400).json({ msg: 'Wrong password' })
+
+	const { accessToken, refreshToken } = generateTokens(user._id)
+	res.setHeader('access-token', accessToken)
+	res.setHeader('refresh-token', refreshToken)
+	res.json({ status: 200, msg: 'Logged in' })
 }
