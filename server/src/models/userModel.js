@@ -5,16 +5,16 @@ const userSchema = mongoose.Schema(
 	{
 		username: {
 			type: String,
-			required: [true, 'Пользователь должен иметь username'],
-			unique: true,
+			required: [true, 'Пользователь должен иметь имя'],
+			unique: [true,'Пользователь с таким именем уже существует'],
 			trim: true,
-			minlength: 3,
-			maxlength: 20
+			minlength: [3,'Имя должно быть длиннее 3 символов'],
+			maxlength: [20,'Имя должно быть короче 20 символов']
 		},
 		email: {
 			type: String,
 			required: [true, 'Пользователь должен иметь email'],
-			unique: true,
+			unique: [true,'Пользователь с таким email уже существует'],
 			trim: true,
 			lowercase: true,
 			match: [
@@ -24,8 +24,8 @@ const userSchema = mongoose.Schema(
 		},
 		password: {
 			type: String,
-			required: [true, 'Пользователь должен иметь password'],
-			minlength: 6,
+			required: [true, 'Пользователь должен иметь пароль'],
+			minlength: [6,'Пароль должен быть длиннее 6 символов'],
 			select: false
 		},
 		chats: [

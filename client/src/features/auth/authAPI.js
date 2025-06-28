@@ -13,4 +13,5 @@ export const registerUserAPI = async (username, email, password) =>
 			{ username, email, password },
 			{ withCredentials: true }
 		)
-		.then(res => res.data)
+		.then(res => res)
+		.catch(res=> res)
