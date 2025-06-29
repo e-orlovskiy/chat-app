@@ -16,6 +16,10 @@ const RegisterPage = () => {
 
 	const handleSubmit = async e => {
 		e.preventDefault()
+			if(password != secondPassword){
+				console.log('wrwgtwegwgwgw')
+				errors.push('Пароли не совпадают')
+			}
 		const res = await dispatch(registerUser({ username, email, password })).unwrap()
 		
 		if(res.code){
