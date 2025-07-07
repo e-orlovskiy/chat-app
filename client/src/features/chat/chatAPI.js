@@ -1,6 +1,7 @@
 import axios from 'axios'
-const CHAT_URL = 'http://localhost:3000/chats'
+import { SERVER_URL } from '../config'
 
+const CHAT_URL = `${SERVER_URL}/chats`
 const config = { withCredentials: true }
 
 export const fetchChatsAPI = async () =>

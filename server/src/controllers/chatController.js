@@ -6,8 +6,6 @@ export const createChat = async (req, res, next) => {
 	try {
 		const { title, privacy, password, members } = req.body
 
-		console.log(members)
-
 		if (!members || members.length < 2) {
 			throw new Error('Для создания чата необходимо указать минимум 2 участника')
 		}
@@ -46,6 +44,8 @@ export const joinPublicChat = async (req, res, next) => {
 		const chatId = req.params.id
 		const userId = req.user._id
 
+		console.log(chatId, userId)
+
 		const chat = await Chat.findById(chatId)
 
 		if (!chat) {
@@ -54,11 +54,11 @@ export const joinPublicChat = async (req, res, next) => {
 		}
 
 		if (chat.members.includes(userId)) {
-			res.status(200).json('Вы успешно зашли в чат')
+			res.status(200).json(chat._id)
 		} else {
 			chat.members.push(userId)
 			await chat.save()
-			res.status(200).json('Вы успешно присоединилсь к чату')
+			res.status(200).json(chat._id)
 		}
 	} catch (err) {
 		next(err)
