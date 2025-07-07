@@ -12,7 +12,6 @@ import Message from './models/messageModel.js'
 import authRouter from './routes/authRoutes.js'
 import chatRouter from './routes/chatRoutes.js'
 import userRouter from './routes/userRoutes.js'
-import cors from 'cors'
 
 dotenv.config()
 
@@ -81,7 +80,8 @@ io.on('connection', socket => {
 			})
 
 			await Chat.findByIdAndUpdate(chatId, { updatedAt: Date.now() })
-
+			await Chat.findByIdAndUpdate(chatId, { $push: { messages: message.id } })
+			
 			const fullMessage = await Message.findById(message._id).populate(
 				'author',
 				'username'

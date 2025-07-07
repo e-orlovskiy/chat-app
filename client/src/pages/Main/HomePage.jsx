@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { createChat, joinPublicChat } from '../../features/chat/chatSlice'
+import { createChat, joinPublicChat, fetchChats } from '../../features/chat/chatSlice'
 import { getAllUsers } from '../../features/users/usersSlice'
 
 const HomePage = () => {
@@ -23,6 +23,12 @@ const HomePage = () => {
 
 	const startChat = async otherUserId => {
 		try {
+			const ExistingChats = await dispatch(fetchChats()).unwrap()
+			const ExistingChat = ExistingChats.find((el) => el.members.includes(user._id) && el.members.includes(otherUserId))
+			if(ExistingChat){
+				navigate(`/chat/${ExistingChat.id}`)
+			}
+			else{
 			const createdChat = await dispatch(
 				createChat({
 					title: 'unnamed',
@@ -36,6 +42,7 @@ const HomePage = () => {
 			const chatId = createdChat._id
 			await dispatch(joinPublicChat(chatId)).unwrap()
 			navigate(`/chat/${chatId}`)
+		}
 		} catch (err) {
 			alert(err.message)
 		}
