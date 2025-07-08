@@ -1,0 +1,135 @@
+.wrapper{
+    width: 90%;
+    height: 90%;
+    background-color: white;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+}
+
+.header{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    box-shadow: 0px 3px 8px rgb(148, 148, 148);
+    box-sizing: border-box;
+    padding: 0.5% 0 0.3% 0;
+    font-weight: 500;
+    font-size: 25px;
+}
+
+.usersList{
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+
+}
+
+.usersList > h3{
+    display: flex;
+    width: 100%;
+    padding: 0.3% 0 1% 0;
+    justify-content: center;
+    align-items: center;
+    font-size: 35px;
+}
+
+.usersList > ul{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    padding: 0 1%;
+    box-sizing: border-box;
+}
+
+.usersList > ul > li{
+    width: 100%;
+    height: 10%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2%;
+}
+
+.usersList > ul > li:first-child{
+    margin: 0;
+}
+
+.usersList > ul > li > div{
+    width: 48%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    background-color: white;
+    border-bottom: 2px solid rgb(124, 124, 124);
+}
+
+.usersList > ul > li > div:hover{
+    background-color: rgb(204, 204, 204);
+}
+
+.chatWin{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    padding-top: 1%;
+}
+
+.chatWin > div:first-child{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+}
+
+.chatInput{
+    width: 100%;
+    height: 5%;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    border-top: 2px solid rgb(124, 124, 124);
+    padding: 0 1%;
+    box-sizing: border-box;
+}
+
+.chatInput > input{
+    width: 100%;
+    height: 100%;
+    border: 0;
+    outline: 0;
+    padding: 0 0 0 0.5%;
+    font-size: 20px;
+}
+
+.sendBtn{
+    color: white;
+    font-size: 20px;
+    background-color: #0E4BF1;
+    border-radius: 50%;
+    padding: 0.4%;
+}

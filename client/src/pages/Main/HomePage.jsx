@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { createChat, joinPublicChat, fetchChats } from '../../features/chat/chatSlice'
 import { getAllUsers } from '../../features/users/usersSlice'
+import styles from './MainPages.module.css'
 
 const HomePage = () => {
 	const dispatch = useDispatch()
@@ -49,16 +50,26 @@ const HomePage = () => {
 	}
 
 	return (
-		<div>
-			<h2>Добро пожаловать, {user.username}</h2>
-			<h3>Пользователи:</h3>
-			<ul>
-				{users.map(u => (
-					<li key={u._id}>
-						{u.username} <button onClick={() => startChat(u._id)}>Чат</button>
-					</li>
-				))}
-			</ul>
+		<div className={styles["wrapper"]}>
+			<span className={styles["header"]}>Добро пожаловать, {user.username}</span>
+			<div className={styles['usersList']}>
+				<h3>Пользователи:</h3>
+				<ul>
+					{users.map((el,i,arr) => 
+						(i+1)%2!=0 ?
+						(
+						<li key={el._id}>
+							<div onClick={() => startChat(el._id)}>
+							{el.username} 
+							</div>
+							{arr[i+1] ?
+							<div onClick={() => startChat(arr[i+1]._id)}>
+							{arr[i+1].username} 
+							</div> : null}
+						</li> 
+					) : null)}
+				</ul>
+			</div>
 		</div>
 	)
 }

@@ -7,6 +7,8 @@ import {
 	fetchMessages,
 	setCurrentChat
 } from '../../features/chat/chatSlice'
+import { FaArrowUp } from "react-icons/fa";
+import styles from './MainPages.module.css'
 
 const ChatPage = () => {
 	const { chatId } = useParams()
@@ -83,18 +85,10 @@ const ChatPage = () => {
 	}
 
 	return (
-		<div>
-			<h2>Чат</h2>
-
-			<div
-				style={{
-					maxHeight: 300,
-					overflowY: 'auto',
-					border: '1px solid #ccc',
-					padding: 8,
-					marginBottom: 10
-				}}
-			>
+		<div className={styles["wrapper"]}>
+		<span className={styles["header"]}>Чат</span>
+		<div className={styles['chatWin']}>
+			<div >
 				{log.map((entry, idx) => (
 					<div key={idx} style={{ color: 'gray', fontStyle: 'italic' }}>
 						{entry}
@@ -107,13 +101,15 @@ const ChatPage = () => {
 					</div>
 				))}
 			</div>
-
+			<div className={styles['chatInput']}>
 			<input
 				value={input}
 				onChange={e => setInput(e.target.value)}
 				onKeyDown={e => e.key === 'Enter' && sendMessage()}
 			/>
-			<button onClick={sendMessage}>Отправить</button>
+			<FaArrowUp className={styles['sendBtn']} onClick={sendMessage}/>
+			</div>
+		</div>
 		</div>
 	)
 }
