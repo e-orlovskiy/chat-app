@@ -28,7 +28,7 @@ export const joinPublicChat = createAsyncThunk(
 )
 export const joinPrivateChat = createAsyncThunk(
 	'chat/joinPrivateChat',
-	async (chatId, password) => {
+	async ({ chatId, password }) => {
 		const response = await joinPrivateChatAPI(chatId, password)
 		return response
 	}
@@ -68,6 +68,15 @@ const chatSlice = createSlice({
 			.addCase(joinPublicChat.fulfilled, (state, action) => {
 				console.log(action)
 				state.currentChat = action.payload
+			})
+			.addCase(joinPublicChat.rejected, (state, action) => {
+				console.log(action)
+			})
+			.addCase(joinPrivateChat.fulfilled, (state, action) => {
+				state.currentChat = action.payload
+			})
+			.addCase(joinPrivateChat.rejected, (state, action) => {
+				console.log(action)
 			})
 	}
 })

@@ -14,6 +14,28 @@ export const createChat = async (req, res, next) => {
 			throw new Error('Для создания приватного чата необходимо указать пароль')
 		}
 
+		if (members.length == 2 && privacy === 'public') {
+			const existingChat = await Chat.findOne({
+				privacy: 'public',
+				members: { $all: members }
+			})
+
+			if (existingChat) {
+				return res.status(200).json(existingChat)
+			}
+		}
+
+		if (members.length == 2 && privacy === 'private') {
+			const existingChat = await Chat.findOne({
+				privacy: 'private',
+				members: { $all: members }
+			})
+
+			if (existingChat) {
+				return res.status(200).json(existingChat)
+			}
+		}
+
 		const chat = await Chat.create({ title, privacy, password, members })
 		await User.updateMany({ _id: { $in: members } }, { $push: { chats: chat._id } })
 
@@ -43,8 +65,6 @@ export const joinPublicChat = async (req, res, next) => {
 	try {
 		const chatId = req.params.id
 		const userId = req.user._id
-
-		console.log(chatId, userId)
 
 		const chat = await Chat.findById(chatId)
 
@@ -119,6 +139,16 @@ export const getChatMessages = async (req, res, next) => {
 		const messages = await Message.find({ chat: chatId })
 
 		res.status(200).json(messages)
+	} catch (err) {
+		next(err)
+	}
+}
+
+export const getChatById = async (req, res, next) => {
+	try {
+		const chat = await Chat.findById(req.params.id)
+		if (!chat) throw new Error('Чат не найден')
+		res.status(200).json(chat)
 	} catch (err) {
 		next(err)
 	}

@@ -20,3 +20,8 @@ export const joinPrivateChatAPI = async (chatId, password) =>
 	axios
 		.post(`${CHAT_URL}/${chatId}/join-private`, { password }, config)
 		.then(res => res.data)
+
+export const getChatByIdAPI = async chatId => {
+	const res = await axios.get(`${CHAT_URL}/${chatId}`, config)
+	return res.data
+}

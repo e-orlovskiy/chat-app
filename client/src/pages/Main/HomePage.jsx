@@ -22,7 +22,14 @@ const HomePage = () => {
 		fetchUsers()
 	}, [dispatch])
 
-	const startChat = async otherUserId => {
+	const startChat = async (otherUserId, chatType) => {
+		let chatPassword = null
+
+		if (chatType === 'private') {
+			chatPassword = prompt('Введите пароль для приватного чата')
+			if (!chatPassword) return
+		}
+
 		try {
 			const ExistingChats = await dispatch(fetchChats()).unwrap()
 			const ExistingChat = ExistingChats.find((el) => el.members.includes(user._id) && el.members.includes(otherUserId))
@@ -33,13 +40,11 @@ const HomePage = () => {
 			const createdChat = await dispatch(
 				createChat({
 					title: 'unnamed',
-					privacy: 'public',
-					password: null,
+					privacy: chatType,
+					password: chatType === 'private' ? chatPassword : null,
 					members: [user._id, otherUserId]
 				})
 			).unwrap()
-			alert('Чат создан')
-			console.log(createdChat)
 			const chatId = createdChat._id
 			await dispatch(joinPublicChat(chatId)).unwrap()
 			navigate(`/chat/${chatId}`)
@@ -70,6 +75,7 @@ const HomePage = () => {
 					) : null)}
 				</ul>
 			</div>
+
 		</div>
 	)
 }
