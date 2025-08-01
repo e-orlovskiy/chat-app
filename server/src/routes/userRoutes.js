@@ -1,10 +1,9 @@
 import express from 'express'
-import { getAllUsers } from '../controllers/userController.js'
+import { searchUsers } from '../controllers/userController.js'
 import { authMiddleware } from '../middlewares/authMiddleware.js'
 
 const router = express.Router()
 
-// get -> получение всех пользователей
-router.get('/', authMiddleware, getAllUsers)
+router.get('/search', authMiddleware, searchUsers)
 
 export default router

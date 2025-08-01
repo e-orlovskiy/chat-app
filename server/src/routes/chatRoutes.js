@@ -1,24 +1,22 @@
 import express from 'express'
 import {
-	createChat,
 	createGroupChat,
+	createOrGetChat,
 	getChatById,
 	getChatMessages,
-	getMyChats,
-	joinPrivateChat,
-	joinPublicChat
+	getUserChats,
+	joinChat
 } from '../controllers/chatController.js'
 import { authMiddleware } from '../middlewares/authMiddleware.js'
 
 const router = express.Router()
 
 router.use(authMiddleware)
-router.post('/', createChat)
-router.post('/group', createGroupChat)
-router.get('/', getMyChats)
+router.get('/', getUserChats)
 router.get('/:id', getChatById)
-router.post('/:id/join-public', joinPublicChat)
-router.post('/:id/join-private', joinPrivateChat)
 router.get('/:id/messages', getChatMessages)
+router.post('/create-or-get-chat', createOrGetChat)
+router.post('/create-group', createGroupChat)
+router.post('/:id/join-chat', joinChat)
 
 export default router

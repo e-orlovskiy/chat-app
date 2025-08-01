@@ -107,10 +107,12 @@
 	font-size: var(--font-size-pre-l);
 	font-weight: bold;
 	color: var(--text-color);
+	margin-bottom: var(--offset-s);
 }
 
 .status-container {
 	position: relative;
+	margin-bottom: var(--offset-s);
 }
 
 .profile-status {

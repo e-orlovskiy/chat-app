@@ -10,7 +10,7 @@ export const authMiddleware = async (req, res, next) => {
 	const token = req.cookies.accessToken
 
 	if (!token) {
-		return res.status(401).json({ message: 'Пользователь не авторизован' })
+		return res.status(401).json({ message: 'User not authenticated' })
 	}
 
 	try {
@@ -18,12 +18,12 @@ export const authMiddleware = async (req, res, next) => {
 		req.user = await User.findById(decoded.id)
 
 		if (!req.user) {
-			return res.status(401).json({ message: 'Пользователь не найден' })
+			return res.status(401).json({ message: 'User not authenticated' })
 		}
 
 		next()
 	} catch (error) {
-		console.error('Ошибка при валидации токена', error.message)
-		return res.status(401).json({ message: 'Неверный токен' })
+		console.error('Token validation error: ', error.message)
+		return res.status(401).json({ message: 'Wrong token' })
 	}
 }

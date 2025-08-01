@@ -30,7 +30,7 @@ export const register = async (req, res, next) => {
 		})
 
 		res.cookie('accessToken', tokens.accessToken, {
-			maxAge: 10 * 60 * 1000, // 10 минут
+			maxAge: 500 * 60 * 1000, // 500 минут
 			httpOnly: true
 		})
 
@@ -70,7 +70,7 @@ export const login = async (req, res, next) => {
 		})
 
 		res.cookie('accessToken', tokens.accessToken, {
-			maxAge: 10 * 60 * 1000, // 10 минут
+			maxAge: 500 * 60 * 1000, // 500 минут
 			httpOnly: true
 		})
 

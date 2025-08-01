@@ -1,15 +1,39 @@
 import User from '../models/userModel.js'
 
-export const getAllUsers = async (req, res, next) => {
+export const searchUsers = async (req, res, next) => {
 	try {
-		// req.user из authMiddleware
-		const currentUserId = req.user._id
+		const { username, page = 1, limit = 10 } = req.query
+		const pageNum = Number(page)
+		const limitNum = Number(limit)
 
-		const users = await User.find({ _id: { $ne: currentUserId } }).select(
-			'_id username email'
-		)
+		if (!username?.trim()) {
+			return res.json({
+				data: [],
+				page: pageNum,
+				hasMore: false,
+				totalCount: 0
+			})
+		}
 
-		res.json(users)
+		const skip = (pageNum - 1) * limitNum
+		const query = {
+			username: { $regex: username, $options: 'i' },
+			_id: { $ne: req.user._id }
+		}
+
+		const [users, totalCount] = await Promise.all([
+			User.find(query).select('_id username email').sort({ username: 1 }).skip(skip).limit(limitNum),
+			User.countDocuments(query)
+		])
+
+		const hasMore = skip + users.length < totalCount
+
+		res.json({
+			data: users,
+			page: pageNum,
+			hasMore,
+			totalCount
+		})
 	} catch (err) {
 		next(err)
 	}

@@ -2,44 +2,59 @@ import Chat from '../models/chatModel.js'
 import Message from '../models/messageModel.js'
 import User from '../models/userModel.js'
 
-export const createChat = async (req, res, next) => {
+export const getUserChats = async (req, res, next) => {
 	try {
-		const { title, privacy, password, members } = req.body
+		const currentUserId = req.user._id
+		const page = Number(req.query.page) || 1
+		const limit = Number(req.query.limit) || 10
+		const skip = (page - 1) * limit
+
+		const totalCount = await Chat.countDocuments({
+			members: { $in: currentUserId }
+		})
+
+		const chats = await Chat.find({ members: { $in: currentUserId } })
+			.skip(skip)
+			.limit(limit)
+			.populate('members', '_id username email')
+			.sort({ updatedAt: -1 })
+
+		const hasMore = skip + chats.length < totalCount
+
+		res.json({
+			data: chats,
+			page,
+			hasMore,
+			totalCount
+		})
+	} catch (err) {
+		next(err)
+	}
+}
+
+export const createOrGetChat = async (req, res, next) => {
+	try {
+		const { members } = req.body
 
 		if (!members || members.length < 2) {
-			throw new Error('Для создания чата необходимо указать минимум 2 участника')
+			throw new Error('Для создания чата необходимо 2 участника')
 		}
 
-		if (privacy === 'private' && !password) {
-			throw new Error('Для создания приватного чата необходимо указать пароль')
-		}
-
-		if (members.length == 2 && privacy === 'public') {
+		if (members.length == 2) {
 			const existingChat = await Chat.findOne({
 				privacy: 'public',
 				members: { $all: members }
 			})
 
 			if (existingChat) {
-				return res.status(200).json(existingChat)
+				return res.status(200).json({ data: existingChat })
 			}
 		}
 
-		if (members.length == 2 && privacy === 'private') {
-			const existingChat = await Chat.findOne({
-				privacy: 'private',
-				members: { $all: members }
-			})
-
-			if (existingChat) {
-				return res.status(200).json(existingChat)
-			}
-		}
-
-		const chat = await Chat.create({ title, privacy, password, members })
+		const chat = await Chat.create({ members })
 		await User.updateMany({ _id: { $in: members } }, { $push: { chats: chat._id } })
 
-		res.status(201).json(chat)
+		res.status(201).json({ data: chat })
 	} catch (err) {
 		next(err)
 	}
@@ -47,14 +62,10 @@ export const createChat = async (req, res, next) => {
 
 export const createGroupChat = async (req, res, next) => {
 	try {
-		const { title, privacy, password, members } = req.body
+		const { title, members } = req.body
 
-		if (!members || members.length < 2) {
-			throw new Error('Для создания группового чата необходимо минимум 2 участника')
-		}
-
-		if (privacy === 'private' && !password) {
-			throw new Error('Для создания группового приватного чата необходим пароль')
+		if (!members) {
+			throw new Error('Для создания группы необходим хотя бы один участник')
 		}
 
 		const existingChat = await Chat.findOne({
@@ -63,35 +74,19 @@ export const createGroupChat = async (req, res, next) => {
 		})
 
 		if (existingChat) {
-			return res.status(200).json(existingChat)
+			return res.status(200).json({ data: existingChat })
 		}
 
-		const chat = await Chat.create({ title, privacy, password, members })
+		const chat = await Chat.create({ title, members })
 		await User.updateMany({ _id: { $in: members } }, { $push: { chats: chat._id } })
 
-		res.status(201).json(chat)
+		res.status(201).json({ data: chat })
 	} catch (err) {
 		next(err)
 	}
 }
 
-export const getMyChats = async (req, res, next) => {
-	try {
-		const userId = req.user._id
-		const chats = await Chat.find({ members: userId })
-
-		if (!chats) {
-			throw new Error('Чаты не найдены')
-		}
-
-		//? Подумать, что передавать
-		res.status(200).json(chats)
-	} catch (err) {
-		next(err)
-	}
-}
-
-export const joinPublicChat = async (req, res, next) => {
+export const joinChat = async (req, res, next) => {
 	try {
 		const chatId = req.params.id
 		const userId = req.user._id
@@ -104,52 +99,12 @@ export const joinPublicChat = async (req, res, next) => {
 		}
 
 		if (chat.members.includes(userId)) {
-			res.status(200).json(chat._id)
+			res.status(200).json({ data: { chatId: chat._id } })
 		} else {
 			chat.members.push(userId)
 			await chat.save()
-			res.status(200).json(chat._id)
+			res.status(200).json({ data: { chatId: chat._id } })
 		}
-	} catch (err) {
-		next(err)
-	}
-}
-
-export const joinPrivateChat = async (req, res, next) => {
-	try {
-		const chatId = req.params.id
-		const { password } = req.body
-		const userId = req.user._id
-
-		const chat = await Chat.findById(chatId).select('+password')
-		if (!chat) {
-			res.status(404)
-			throw new Error('Чат не найден')
-		}
-
-		if (chat.privacy !== 'private') {
-			res.status(400)
-			throw new Error('Это не приватный чат')
-		}
-
-		const isMatch = await chat.correctPassword(password, chat.password)
-
-		if (!isMatch) {
-			res.status(401)
-			throw new Error('Неверный пароль')
-		}
-
-		if (!chat.members.includes(userId)) {
-			chat.members.push(userId)
-			await chat.save()
-			await User.findByIdAndUpdate(userId, { $push: { chats: chat._id } })
-		}
-
-		res.status(200).json({
-			message: 'Вы успешно присоединились к чату',
-			chatId,
-			accessGranted: true
-		})
 	} catch (err) {
 		next(err)
 	}
@@ -172,7 +127,7 @@ export const getChatMessages = async (req, res, next) => {
 
 		const messages = await Message.find({ chat: chatId })
 
-		res.status(200).json(messages)
+		res.status(200).json({ data: messages })
 	} catch (err) {
 		next(err)
 	}
@@ -182,7 +137,7 @@ export const getChatById = async (req, res, next) => {
 	try {
 		const chat = await Chat.findById(req.params.id)
 		if (!chat) throw new Error('Чат не найден')
-		res.status(200).json(chat)
+		res.status(200).json({ data: chat })
 	} catch (err) {
 		next(err)
 	}

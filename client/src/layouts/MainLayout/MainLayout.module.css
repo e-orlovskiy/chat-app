@@ -17,4 +17,5 @@
 	box-shadow: var(--main-box-shadow);
 	padding: var(--offset-m);
 	transition: background-color 0.3s ease, color 0.3s ease;
+	gap: var(--offset-m);
 }

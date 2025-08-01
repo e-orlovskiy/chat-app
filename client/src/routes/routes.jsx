@@ -1,8 +1,8 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
-import Chat from '../components/Chat'
 import ProtectedRoute from '../components/ProtectedRoute'
 import MainLayout from '../layouts/MainLayout/MainLayout'
 import Auth from '../pages/Auth/Auth'
+
 export const router = createBrowserRouter([
 	{
 		path: '/',
@@ -11,7 +11,7 @@ export const router = createBrowserRouter([
 			{
 				path: '/',
 				element: <MainLayout />,
-				children: [{ path: '/chat/:chatId', element: <Chat /> }]
+				children: [{ path: '/chat/:chatId', element: <div>TempChat</div> }]
 			}
 		]
 	},

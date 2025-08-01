@@ -47,6 +47,12 @@ const io = new IOServer(server, {
 io.on('connection', socket => {
 	console.log('Новый пользователь подключился', socket.id)
 
+	// изменение статуса
+	socket.on('changeStatus', ({ userId, status }) => {
+		console.log(`Cтатус пользователя ${userId} изменился на ${status}`)
+		io.emit('statusChanged', { userId, status })
+	})
+
 	// присоединение к комнате
 	socket.on('joinRoom', async ({ chatId, userId, username }) => {
 		socket.join(chatId)
