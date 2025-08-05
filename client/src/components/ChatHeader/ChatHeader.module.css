@@ -1,0 +1,30 @@
+.chat-window__header {
+	height: 50px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 var(--offset-m);
+}
+
+.chat-window__actions {
+	display: flex;
+	gap: var(--offset-xs);
+}
+
+.chat-window__actions > li {
+	list-style: none;
+	font-size: var(--font-size-m);
+	padding: var(--offset-s) var(--offset-m);
+	border-radius: var(--border-radius-xl);
+	cursor: pointer;
+	color: var(--input-text-light-color);
+}
+
+.chat-window__actions > li.active {
+	background: var(--lightgreen-color);
+	color: var(--green-color);
+}
+
+.chat-window__title {
+	font-size: var(--font-size-pre-l);
+}

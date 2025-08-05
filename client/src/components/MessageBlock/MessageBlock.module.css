@@ -1,0 +1,48 @@
+.message {
+	display: inline-flex;
+	align-self: flex-start;
+	position: relative;
+	background: #fff;
+	border-radius: var(--border-radius-m);
+	padding: 10px 15px;
+	max-width: 70%;
+	filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.message::after {
+	content: '';
+	position: absolute;
+	bottom: 5px;
+	left: -10px;
+	width: 12px;
+	height: 12px;
+	background: inherit; /* Наследует цвет фона */
+	clip-path: polygon(0 100%, 100% 100%, 100% 0);
+}
+
+.message__text {
+	font-size: var(--font-size-m);
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+	word-break: break-word;
+	hyphens: auto;
+}
+
+.message.own {
+	align-self: flex-end;
+	background: var(--my-message-bg-color);
+}
+
+.message.own::after {
+	left: auto;
+	right: -10px; /* Выносим за правую границу */
+	clip-path: polygon(0 100%, 100% 100%, 0 0);
+}
+
+.message__avatar {
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	object-fit: cover;
+	object-position: center;
+}

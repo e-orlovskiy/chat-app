@@ -1,0 +1,59 @@
+import cn from 'classnames'
+import debounce from 'lodash.debounce'
+import { useEffect, useMemo, useState } from 'react'
+import MyChats from '../MyChats/MyChats'
+import Profile from '../Profile/Profile'
+import TextInput from '../TextInput/TextInput'
+import styles from './Sidebar.module.css'
+
+function Sidebar() {
+	const [inputValue, setInputValue] = useState('')
+	const [searchTerm, setSearchTerm] = useState('')
+	const [searchFocused, setSearchFocused] = useState(false)
+
+	const debouncedSearch = useMemo(
+		() =>
+			debounce(query => {
+				setSearchTerm(query)
+			}, 500),
+		[]
+	)
+
+	useEffect(() => {
+		return () => debouncedSearch.cancel()
+	}, [debouncedSearch])
+
+	useEffect(() => {
+		if (searchTerm.length === 0) {
+			setSearchFocused(false)
+		} else {
+			setSearchFocused(true)
+		}
+	}, [searchTerm])
+
+	const handleChange = e => {
+		const value = e.target.value
+		setInputValue(value)
+		debouncedSearch(value)
+	}
+
+	return (
+		<div className={cn(styles.sidebar)}>
+			<div className={styles['sidebar__header']}>
+				<h1 className={cn(styles.title)}>Chat App</h1>
+			</div>
+			<div className={cn(styles.underline)}></div>
+			<Profile />
+			<TextInput
+				type='search'
+				name='search'
+				placeholder='search'
+				value={inputValue}
+				onChange={handleChange}
+			/>
+			<MyChats searchFocused={searchFocused} searchTerm={searchTerm} inputValue={inputValue} />
+		</div>
+	)
+}
+
+export default Sidebar

@@ -1,0 +1,206 @@
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createOrGetChatAPI, getChatByIdAPI, getChatMessagesAPI, getUserChatsAPI } from './chatAPI'
+
+// 1. Users chats
+export const getUserChats = createAsyncThunk(
+	'chat/getUserChats',
+	async ({ page, limit }, { rejectWithValue }) => {
+		try {
+			return await getUserChatsAPI(page, limit)
+		} catch (err) {
+			return rejectWithValue(err.message)
+		}
+	}
+)
+
+// 2. Create or get existing chat
+export const createOrGetChat = createAsyncThunk(
+	'chat/createOrGetChat',
+	async ({ members }, { rejectWithValue }) => {
+		try {
+			return await createOrGetChatAPI(members)
+		} catch (error) {
+			return rejectWithValue(error.message)
+		}
+	}
+)
+
+// 3. Get specific chat
+export const getChatById = createAsyncThunk(
+	'chat/getChatById',
+	async (chatId, { rejectWithValue }) => {
+		try {
+			return await getChatByIdAPI(chatId)
+		} catch (error) {
+			return rejectWithValue(error.message)
+		}
+	}
+)
+
+// 4. Get chat messages
+export const getChatMessages = createAsyncThunk(
+	'chat/getChatMessages',
+	async ({ chatId, page, limit }, { rejectWithValue }) => {
+		try {
+			return await getChatMessagesAPI(chatId, page, limit)
+		} catch (error) {
+			return rejectWithValue(error.message)
+		}
+	}
+)
+
+const chatSlice = createSlice({
+	name: 'chat',
+	initialState: {
+		chats: [],
+		currentChat: null,
+		messages: [],
+		status: 'idle',
+		error: null,
+		currentPage: 1,
+		hasMore: true,
+		loadingMore: false,
+		messagesLoading: false,
+		onlineUsers: [],
+		typingUsers: []
+	},
+	reducers: {
+		addMessage: (state, action) => {
+			// analize this fn
+			if (state.currentChat && action.payload.chat === state.currentChat._id) {
+				state.messages.push(action.payload)
+			}
+
+			const chatIndex = state.chats.findIndex(chat => chat._id === action.payload.chat)
+			if (chatIndex !== -1) {
+				state.chats[chatIndex].lastMessage = {
+					text: action.payload.text,
+					createdAt: action.payload.createdAt
+				}
+
+				const updatedChat = state.chats[chatIndex]
+				state.chats.splice(chatIndex, 1)
+				state.chats.unshift(updatedChat)
+			}
+		},
+		updateUserStatus: (state, action) => {
+			const { userId, status } = action.payload
+			if (status === 'online') {
+				if (!state.onlineUsers.includes(userId)) {
+					state.onlineUsers.push(userId)
+				}
+			} else {
+				state.onlineUsers = state.onlineUsers.filter(user => user !== userId)
+			}
+		},
+		setUserTyping: (state, action) => {
+			const { userId, chatId, isTyping } = action.payload
+			if (isTyping) {
+				const typingUser = { userId, chatId }
+				if (!state.typingUsers.find(user => user.userId === userId && user.chatId === chatId)) {
+					state.typingUsers.push(typingUser)
+				}
+			} else {
+				state.typingUsers = state.typingUsers.filter(
+					user => !(user.userId === userId && user.chatId === chatId)
+				)
+			}
+		},
+		setCurrentChat: (state, action) => {
+			state.currentChat = action.payload
+			state.messages = []
+		},
+		resetChats: state => {
+			state.chats = []
+			state.currentPage = 1
+			state.hasMore = true
+		},
+		clearMessages: state => {
+			state.messages = []
+		}
+	},
+	extraReducers: builder => {
+		builder
+			// загрузка чатов
+			.addCase(getUserChats.pending, (state, action) => {
+				if (action.meta.arg.page === 1) {
+					state.status = 'loading'
+					state.chats = []
+				} else {
+					state.loadingMore = true
+				}
+			})
+			.addCase(getUserChats.fulfilled, (state, action) => {
+				const { data, page, hasMore } = action.payload
+				if (page === 1) {
+					state.chats = data
+				} else {
+					state.chats = [...state.chats, ...data]
+				}
+				state.currentPage = page
+				state.hasMore = hasMore
+				state.status = 'succeeded'
+				state.loadingMore = false
+			})
+			.addCase(getUserChats.rejected, (state, action) => {
+				state.error = action.payload
+				state.status = 'failed'
+				state.loadingMore = false
+			})
+			// 2. Create or get chat
+			.addCase(createOrGetChat.pending, state => {
+				state.status = 'loading'
+			})
+			.addCase(createOrGetChat.fulfilled, (state, action) => {
+				state.status = 'succeeded'
+				const newChat = action.payload.data
+
+				const existingChatIndex = state.chats.findIndex(chat => chat._id === newChat._id)
+
+				if (existingChatIndex === -1) {
+					state.chats.unshift(newChat)
+				} else {
+					const existingChat = state.chats[existingChatIndex]
+					state.chats.splice(existingChatIndex, 1)
+					state.chats.unshift(existingChat)
+				}
+
+				state.currentChat = newChat
+			})
+			.addCase(createOrGetChat.rejected, (state, action) => {
+				state.error = action.payload
+				state.status = 'failed'
+			})
+			// 3. getting chat by id
+			.addCase(getChatById.fulfilled, (state, action) => {
+				state.currentChat = action.payload.data
+			})
+			// 4. getting messages
+			.addCase(getChatMessages.pending, state => {
+				state.messagesLoading = true
+			})
+			.addCase(getChatMessages.fulfilled, (state, action) => {
+				const { data, page } = action.payload
+				if (page === 1) {
+					state.messages = data
+				} else {
+					state.messages = [...data, ...state.messages]
+				}
+				state.messagesLoading = false
+			})
+			.addCase(getChatMessages.rejected, (state, action) => {
+				state.error = action.payload
+				state.messagesLoading = false
+			})
+	}
+})
+
+export const {
+	addMessage,
+	setCurrentChat,
+	resetChats,
+	updateUserStatus,
+	setUserTyping,
+	clearMessages
+} = chatSlice.actions
+export default chatSlice.reducer

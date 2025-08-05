@@ -1,0 +1,21 @@
+.main-layout {
+	height: 100%;
+	width: 100%;
+	background-color: var(--chat-bg-color);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.main-layout__container {
+	width: 1200px;
+	height: 750px;
+	display: flex;
+	background-color: var(--primary-color);
+	border-radius: var(--border-radius-l);
+	box-shadow: var(--main-box-shadow);
+	padding: var(--offset-m);
+	transition: background-color 0.3s ease, color 0.3s ease;
+	gap: var(--offset-m);
+}
