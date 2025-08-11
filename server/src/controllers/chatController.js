@@ -40,21 +40,27 @@ export const createOrGetChat = async (req, res, next) => {
 			throw new Error('Для создания чата необходимо 2 участника')
 		}
 
-		if (members.length == 2) {
-			const existingChat = await Chat.findOne({
-				privacy: 'public',
-				members: { $all: members }
-			})
+		const existingChat = await Chat.findOne({
+			members: { $all: members, $size: members.length }
+		}).populate('members', 'username')
 
-			if (existingChat) {
-				return res.status(200).json({ data: existingChat })
-			}
+		if (existingChat) {
+			return res.status(200).json({ success: true, data: existingChat })
 		}
 
-		const chat = await Chat.create({ members })
-		await User.updateMany({ _id: { $in: members } }, { $push: { chats: chat._id } })
+		const newChat = await Chat.create({ members })
 
-		res.status(201).json({ data: chat })
+		await User.updateMany(
+			{ _id: { $in: members } },
+			{ $addToSet: { chats: newChat._id } }
+		)
+
+		res
+			.status(201)
+			.json({
+				success: true,
+				data: await Chat.findById(newChat._id).populate('members', 'username')
+			})
 	} catch (err) {
 		next(err)
 	}
@@ -78,7 +84,10 @@ export const createGroupChat = async (req, res, next) => {
 		}
 
 		const chat = await Chat.create({ title, members })
-		await User.updateMany({ _id: { $in: members } }, { $push: { chats: chat._id } })
+		await User.updateMany(
+			{ _id: { $in: members } },
+			{ $push: { chats: chat._id } }
+		)
 
 		res.status(201).json({ data: chat })
 	} catch (err) {

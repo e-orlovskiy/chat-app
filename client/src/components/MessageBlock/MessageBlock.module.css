@@ -1,22 +1,30 @@
 .message {
-	display: inline-flex;
+	display: flex;
+	gap: var(--offset-s);
+	max-width: 60%;
 	align-self: flex-start;
+}
+
+.message.own {
+	align-self: flex-end;
+}
+
+.message__text {
 	position: relative;
-	background: #fff;
-	border-radius: var(--border-radius-m);
+	background: var(--primary-color);
+	border-radius: var(--border-radius-l);
 	padding: 10px 15px;
-	max-width: 70%;
 	filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
-.message::after {
+.message__text::after {
 	content: '';
 	position: absolute;
-	bottom: 5px;
+	bottom: 10px;
 	left: -10px;
 	width: 12px;
 	height: 12px;
-	background: inherit; /* Наследует цвет фона */
+	background: inherit;
 	clip-path: polygon(0 100%, 100% 100%, 100% 0);
 }
 
@@ -28,21 +36,54 @@
 	hyphens: auto;
 }
 
-.message.own {
-	align-self: flex-end;
+.message.own .message__text {
 	background: var(--my-message-bg-color);
 }
 
-.message.own::after {
+.message.own .message__text::after {
 	left: auto;
-	right: -10px; /* Выносим за правую границу */
+	right: -10px;
 	clip-path: polygon(0 100%, 100% 100%, 0 0);
 }
 
 .message__avatar {
+	display: flex;
+	border: 2px solid var(--primary-color);
+	flex-grow: 0;
+	flex-shrink: 0;
 	width: 35px;
 	height: 35px;
 	border-radius: 50%;
 	object-fit: cover;
 	object-position: center;
+	align-self: flex-end;
+	margin-bottom: var(--offset-s);
+}
+
+.message.own .message__avatar {
+	order: 2;
+}
+
+.message__content {
+	display: flex;
+	flex-direction: column;
+	gap: var(--offset-xs);
+	width: fit-content;
+}
+
+.message__author-and-date {
+	display: flex;
+	gap: var(--offset-s);
+	align-items: center;
+	justify-content: flex-start;
+}
+
+.message.own .message__author-and-date {
+	justify-content: flex-end;
+}
+
+.message__author,
+.message__date {
+	font-size: var(--font-size-s);
+	color: var(--text-color);
 }

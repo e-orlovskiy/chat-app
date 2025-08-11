@@ -1,10 +1,11 @@
+import cookie from 'cookie'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
 import http from 'http'
+import jwt from 'jsonwebtoken'
 import mongoose from 'mongoose'
-import morgan from 'morgan'
 import { Server as IOServer } from 'socket.io'
 import { errorHandler } from './middlewares/errorMiddleware.js'
 import Chat from './models/chatModel.js'
@@ -27,7 +28,7 @@ mongoose
 const app = express()
 
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }))
-app.use(morgan('dev'))
+// app.use(morgan('dev'))
 app.use(express.json())
 app.use(cookieParser())
 
@@ -44,20 +45,38 @@ const io = new IOServer(server, {
 	cors: { origin: process.env.CLIENT_URL, credentials: true }
 })
 
+io.use((socket, next) => {
+	try {
+		const cookies = cookie.parse(socket.handshake.headers.cookie || '')
+		const token = cookies.accessToken
+
+		if (!token) {
+			return next(new Error('Authentication error: token missing'))
+		}
+
+		const decoded = jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET)
+		socket.user = { id: decoded.id }
+
+		next()
+	} catch (err) {
+		console.error('Socket auth error:', err.message)
+		next(new Error('Authentication error'))
+	}
+})
+
 io.on('connection', socket => {
 	console.log('Новый пользователь подключился', socket.id)
 
 	// изменение статуса
-	socket.on('changeStatus', ({ userId, status }) => {
-		console.log(`Cтатус пользователя ${userId} изменился на ${status}`)
-		io.emit('statusChanged', { userId, status })
-	})
+	// socket.on('changeStatus', ({ userId, status }) => {
+	// 	console.log(`Cтатус пользователя ${userId} изменился на ${status}`)
+	// 	io.emit('statusChanged', { userId, status })
+	// })
 
 	// присоединение к комнате
 	socket.on('joinRoom', async ({ chatId, userId, username }) => {
-		socket.join(chatId)
 		console.log(`Пользователь ${username} присоединился к комнате ${chatId}`)
-		socket.to(chatId).emit('userJoined', { userId, username, chatId })
+		socket.to(chatId).emit('userJoined', { chatId, userId, username })
 	})
 
 	// выход из комнаты

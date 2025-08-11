@@ -1,6 +1,6 @@
 .chat-container {
 	display: flex;
-	align-items: center;
+	flex-direction: column;
 	justify-content: center;
 	flex: 1;
 	background: var(--chat-bg-color);
@@ -18,14 +18,7 @@
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-	/* gap: var(--offset-m); */
-	padding: var();
-}
-
-.chat-window__underline {
-	width: 100%;
-	height: 1.5px;
-	background: var(--my-message-bg-color);
+	padding: var(--offset-m);
 }
 
 .chat-window__main {
@@ -33,5 +26,4 @@
 	flex-direction: column;
 	height: 100%;
 	justify-content: flex-end;
-	padding: var(--offset-m);
 }

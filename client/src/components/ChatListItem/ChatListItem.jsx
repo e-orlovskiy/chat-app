@@ -1,91 +1,88 @@
-import { memo, useMemo } from 'react'
+import { memo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { createOrGetChat, setCurrentChat } from '../../features/chat/chatSlice'
-import { useSocketChat } from '../../hooks/useSocketChats'
-import { formatTime } from '../../utils/formatTime'
 import styles from './ChatListItem.module.css'
 
-function ChatListItem({ chatId, isSearchResult = false }) {
+function ChatListItem({
+	chatId = null, // Для существующих чатов
+	userId = null, // Для результатов поиска
+	isSearchResult = false,
+	userData = null // Данные пользователя для поиска
+}) {
+	const [isLoading, setIsLoading] = useState(false)
 	const currentUser = useSelector(state => state.auth.user)
 	const chats = useSelector(state => state.chat.chats)
-	const searchResults = useSelector(state => state.users.searchResults)
 	const currentChat = useSelector(state => state.chat.currentChat)
-
-	const { joinChat, leaveChat } = useSocketChat()
+	const navigate = useNavigate()
 	const dispatch = useDispatch()
 
-	const itemData = useMemo(() => {
-		if (isSearchResult) {
-			const user = searchResults?.find(u => u?._id === chatId)
-			return user
-				? {
-						type: 'user',
-						name: user.username,
-						message: 'Start a conversation',
-						time: '',
-						data: user
-				  }
-				: null
-		}
-
-		const chat = chats?.find(c => c?._id === chatId)
-		if (!chat) return null
-
-		const otherMember = chat.members?.find(m => m?._id !== currentUser?._id)
-
-		return {
-			type: 'chat',
-			name: otherMember?.username || 'Unknown user',
-			message: chat.lastMessage?.text || 'No messages yet',
-			time: formatTime(chat.lastMessage?.createdAt),
-			data: chat
-		}
-	}, [chatId, isSearchResult, searchResults, chats, currentUser?._id])
-
 	const clickHandler = async () => {
-		if (isSearchResult) {
-			const existingChat = chats.find(chat => chat.members?.some(member => member._id === chatId))
+		if (isLoading) return
+		setIsLoading(true)
 
-			if (existingChat) {
-				if (currentChat) {
-					leaveChat(currentChat._id)
-				}
+		try {
+			// для существующих чатов
+			if (!isSearchResult && chatId) {
+				if (currentChat?._id === chatId) return
 
-				dispatch(setCurrentChat(existingChat))
-				joinChat(existingChat._id)
-			} else {
+				dispatch(setCurrentChat(chatId))
+				navigate(`/chat/${chatId}`)
+				return
+			}
+
+			// для результатов поиска
+			if (isSearchResult && userId) {
 				const result = await dispatch(
-					createOrGetChat({
-						members: [currentUser?._id, chatId]
-					})
+					createOrGetChat({ members: [currentUser._id, userId] })
 				)
 
 				if (result.payload?.data) {
-					joinChat(result.payload.data._id)
+					dispatch(setCurrentChat(result.payload.data._id))
+					navigate(`/chat/${result.payload.data._id}`)
 				}
 			}
-		} else {
-			if (currentChat && currentChat._id !== itemData.data._id) {
-				leaveChat(currentChat._id)
-			}
-
-			dispatch(setCurrentChat(itemData.data))
-			joinChat(itemData.data._id)
+		} finally {
+			setIsLoading(false)
 		}
 	}
 
-	if (!itemData) return null
+	const displayData = isSearchResult
+		? {
+				name: userData?.username || 'Unknown',
+				message: 'Start a conversation',
+				time: ''
+		  }
+		: {
+				name:
+					chats
+						.find(c => c._id === chatId)
+						?.members.find(m => m._id !== currentUser?._id)?.username ||
+					'Unknown',
+				message:
+					chats.find(c => c._id === chatId)?.lastMessage?.text ||
+					'No messages yet',
+				time: chats.find(c => c._id === chatId)?.lastMessage?.createdAt
+		  }
 
 	return (
-		<li className={styles['chats-user']} onClick={clickHandler}>
+		<li
+			className={styles['chats-user']}
+			onClick={clickHandler}
+			style={{ opacity: isLoading ? 0.5 : 1 }}
+		>
 			<div className={styles['chats-user__user-and-text']}>
 				<div className={styles['chats-user__avatar']} />
 				<div className={styles['chats-user__text']}>
-					<p className={styles['chats-user__username']}>{itemData.name}</p>
-					<p className={styles['chats-user__last-message']}>{itemData.message}</p>
+					<p className={styles['chats-user__username']}>{displayData.name}</p>
+					<p className={styles['chats-user__last-message']}>
+						{displayData.message}
+					</p>
 				</div>
 			</div>
-			{itemData.time && <p className={styles['chats-user__date']}>{itemData.time}</p>}
+			{displayData.time && (
+				<p className={styles['chats-user__date']}>{displayData.time}</p>
+			)}
 		</li>
 	)
 }

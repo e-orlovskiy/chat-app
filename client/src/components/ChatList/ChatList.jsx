@@ -1,4 +1,3 @@
-// Селекторыimport cn from 'classnames'
 import cn from 'classnames'
 import { useCallback, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -14,26 +13,22 @@ function ChatList({ searchFocused, searchTerm, inputValue }) {
 	const chatObserver = useRef()
 	const searchObserver = useRef()
 
-	// Используем inputValue для немедленного переключения UI
 	const showSearch = inputValue.length > 0
 	const chatState = useSelector(state => state.chat)
 	const userState = useSelector(state => state.users)
 
-	// Загрузка первой страницы чатов
 	useEffect(() => {
 		if (!showSearch) {
 			dispatch(getUserChats({ page: 1, limit: PAGE_SIZE }))
 		}
 	}, [showSearch, dispatch])
 
-	// Загрузка результатов поиска
 	useEffect(() => {
 		if (showSearch && searchTerm) {
 			dispatch(searchUsers({ username: searchTerm, page: 1, limit: PAGE_SIZE }))
 		}
 	}, [showSearch, searchTerm, dispatch])
 
-	// Загрузка следующей страницы чатов
 	const loadNextChatPage = useCallback(() => {
 		if (chatState.status === 'loading' || !chatState.hasMore) return
 
@@ -41,15 +36,26 @@ function ChatList({ searchFocused, searchTerm, inputValue }) {
 		dispatch(getUserChats({ page: nextPage, limit: PAGE_SIZE }))
 	}, [chatState.status, chatState.hasMore, chatState.currentPage, dispatch])
 
-	// Загрузка следующей страницы поиска
 	const loadNextSearchPage = useCallback(() => {
-		if (userState.status === 'loading' || !userState.hasMore || !searchTerm) return
+		if (userState.status === 'loading' || !userState.hasMore || !searchTerm)
+			return
 
 		const nextPage = userState.currentPage + 1
-		dispatch(searchUsers({ username: searchTerm, page: nextPage, limit: PAGE_SIZE }))
-	}, [userState.status, userState.hasMore, userState.currentPage, searchTerm, dispatch])
+		dispatch(
+			searchUsers({
+				username: searchTerm,
+				page: nextPage,
+				limit: PAGE_SIZE
+			})
+		)
+	}, [
+		userState.status,
+		userState.hasMore,
+		userState.currentPage,
+		searchTerm,
+		dispatch
+	])
 
-	// Observer для чатов
 	const lastChatRef = useCallback(
 		node => {
 			chatObserver.current?.disconnect()
@@ -65,7 +71,6 @@ function ChatList({ searchFocused, searchTerm, inputValue }) {
 		[chatState.hasMore, chatState.status, loadNextChatPage]
 	)
 
-	// Observer для поиска
 	const lastSearchRef = useCallback(
 		node => {
 			searchObserver.current?.disconnect()
@@ -81,7 +86,6 @@ function ChatList({ searchFocused, searchTerm, inputValue }) {
 		[userState.hasMore, userState.status, loadNextSearchPage]
 	)
 
-	// Очистка observers
 	useEffect(() => {
 		return () => {
 			chatObserver.current?.disconnect()
@@ -90,7 +94,10 @@ function ChatList({ searchFocused, searchTerm, inputValue }) {
 	}, [])
 
 	const renderChatsList = () => {
-		const isEmpty = chatState.chats.length === 0 && chatState.status === 'succeeded' && !searchTerm
+		const isEmpty =
+			chatState.chats.length === 0 &&
+			chatState.status === 'succeeded' &&
+			!searchTerm
 
 		if (isEmpty) {
 			return <div className={styles.noResults}>No chats found</div>
@@ -103,26 +110,28 @@ function ChatList({ searchFocused, searchTerm, inputValue }) {
 				})}
 			>
 				{chatState.chats.map((chat, index) => (
-					<div key={chat._id} ref={index === chatState.chats.length - 1 ? lastChatRef : null}>
+					<div
+						key={chat._id}
+						ref={index === chatState.chats.length - 1 ? lastChatRef : null}
+					>
 						<ChatListItem chatId={chat._id} isSearchResult={false} />
 					</div>
 				))}
-				{chatState.status === 'loading' && <div className={styles.loading}>Loading chats...</div>}
+				{chatState.status === 'loading' && (
+					<div className={styles.loading}>Loading chats...</div>
+				)}
 			</ul>
 		)
 	}
 
 	const renderSearchResults = () => {
 		const isEmpty =
-			userState.searchResults.length === 0 && userState.status === 'succeeded' && searchTerm
+			userState.searchResults.length === 0 &&
+			userState.status === 'succeeded' &&
+			searchTerm
 
-		if (isEmpty) {
-			return <div className={styles.noResults}>No users found</div>
-		}
-
-		if (!searchTerm) {
-			return null
-		}
+		if (isEmpty) return <div className={styles.noResults}>No users found</div>
+		if (!searchTerm) return null
 
 		return (
 			<ul
@@ -133,9 +142,17 @@ function ChatList({ searchFocused, searchTerm, inputValue }) {
 				{userState.searchResults.map((user, index) => (
 					<div
 						key={user._id}
-						ref={index === userState.searchResults.length - 1 ? lastSearchRef : null}
+						ref={
+							index === userState.searchResults.length - 1
+								? lastSearchRef
+								: null
+						}
 					>
-						<ChatListItem chatId={user._id} isSearchResult={true} />
+						<ChatListItem
+							userId={user._id}
+							isSearchResult={true}
+							userData={user}
+						/>
 					</div>
 				))}
 				{userState.status === 'loading' && showSearch && (

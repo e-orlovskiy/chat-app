@@ -1,5 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { createOrGetChatAPI, getChatByIdAPI, getChatMessagesAPI, getUserChatsAPI } from './chatAPI'
+import {
+	createOrGetChatAPI,
+	getChatByIdAPI,
+	getChatMessagesAPI,
+	getUserChatsAPI
+} from './chatAPI'
 
 // 1. Users chats
 export const getUserChats = createAsyncThunk(
@@ -66,12 +71,13 @@ const chatSlice = createSlice({
 	},
 	reducers: {
 		addMessage: (state, action) => {
-			// analize this fn
 			if (state.currentChat && action.payload.chat === state.currentChat._id) {
 				state.messages.push(action.payload)
 			}
 
-			const chatIndex = state.chats.findIndex(chat => chat._id === action.payload.chat)
+			const chatIndex = state.chats.findIndex(
+				chat => chat._id === action.payload.chat
+			)
 			if (chatIndex !== -1) {
 				state.chats[chatIndex].lastMessage = {
 					text: action.payload.text,
@@ -97,7 +103,11 @@ const chatSlice = createSlice({
 			const { userId, chatId, isTyping } = action.payload
 			if (isTyping) {
 				const typingUser = { userId, chatId }
-				if (!state.typingUsers.find(user => user.userId === userId && user.chatId === chatId)) {
+				if (
+					!state.typingUsers.find(
+						user => user.userId === userId && user.chatId === chatId
+					)
+				) {
 					state.typingUsers.push(typingUser)
 				}
 			} else {
@@ -151,18 +161,16 @@ const chatSlice = createSlice({
 			.addCase(createOrGetChat.pending, state => {
 				state.status = 'loading'
 			})
+			// В extraReducers:
 			.addCase(createOrGetChat.fulfilled, (state, action) => {
 				state.status = 'succeeded'
 				const newChat = action.payload.data
 
-				const existingChatIndex = state.chats.findIndex(chat => chat._id === newChat._id)
+				// Проверяем нет ли уже такого чата
+				const chatExists = state.chats.some(chat => chat._id === newChat._id)
 
-				if (existingChatIndex === -1) {
+				if (!chatExists) {
 					state.chats.unshift(newChat)
-				} else {
-					const existingChat = state.chats[existingChatIndex]
-					state.chats.splice(existingChatIndex, 1)
-					state.chats.unshift(existingChat)
 				}
 
 				state.currentChat = newChat

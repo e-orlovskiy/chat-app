@@ -23,7 +23,11 @@ export const getUserChatsAPI = async (page = 1, limit = 10) => {
 
 export const createOrGetChatAPI = async members => {
 	try {
-		const response = await axios.post(`${CHAT_URL}/create-or-get-chat`, { members }, config)
+		const response = await axios.post(
+			`${CHAT_URL}/create-or-get-chat`,
+			{ members },
+			config
+		)
 		return response.data
 	} catch (error) {
 		throw new Error(error.response?.data?.message || 'Failed to create chat')
@@ -38,6 +42,8 @@ export const getChatMessagesAPI = async (chatId, page = 1, limit = 50) => {
 		})
 		return response.data
 	} catch (error) {
-		throw new Error(error.response?.data?.message || 'Failed to fetch chat messages')
+		throw new Error(
+			error.response?.data?.message || 'Failed to fetch chat messages'
+		)
 	}
 }
