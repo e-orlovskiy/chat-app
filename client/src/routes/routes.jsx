@@ -2,7 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import ProtectedRoute from '../components/ProtectedRoute'
 import MainLayout from '../layouts/MainLayout/MainLayout'
 import Auth from '../pages/Auth/Auth'
-
+import NotFound from '../pages/NotFound/NotFound'
 export const router = createBrowserRouter([
 	{
 		path: '/',
@@ -23,5 +23,9 @@ export const router = createBrowserRouter([
 			{ path: '/auth/login', element: <Auth /> },
 			{ path: '/auth/register', element: <Auth /> }
 		]
+	},
+	{
+		path: '*',
+		element: <NotFound />
 	}
 ])

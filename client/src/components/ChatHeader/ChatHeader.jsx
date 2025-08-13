@@ -1,19 +1,26 @@
 import cn from 'classnames'
+import { memo } from 'react'
 import styles from './ChatHeader.module.css'
 
-function ChatHeader() {
+const ChatHeader = memo(({ interlocutor }) => {
 	return (
 		<>
 			<div className={styles['chat-window__header']}>
-				<h2 className={styles['chat-window__title']}>Chat with John Doe</h2>
+				<h2 className={styles['chat-window__title']}>
+					{interlocutor
+						? `Chat with ${interlocutor.username}`
+						: 'Loading chat...'}
+				</h2>
 				<ul className={styles['chat-window__actions']}>
-					<li className={cn(styles['chat-window__action'], styles['active'])}>Messages</li>
+					<li className={cn(styles['chat-window__action'], styles['active'])}>
+						Messages
+					</li>
 					<li className={styles['chat-window__action']}>Participants</li>
 				</ul>
 			</div>
 			<div className={styles['chat-window__underline']}></div>
 		</>
 	)
-}
+})
 
-export default ChatHeader
+export default memo(ChatHeader)

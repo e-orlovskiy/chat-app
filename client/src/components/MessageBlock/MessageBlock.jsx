@@ -1,9 +1,9 @@
 import cn from 'classnames'
 import styles from './MessageBlock.module.css'
 
-function MessageBlock() {
+function MessageBlock({ own = false }) {
 	return (
-		<div className={cn(styles['message'])}>
+		<div className={cn(styles['message'], { [styles['own']]: own })}>
 			<img
 				className={cn(styles['message__avatar'])}
 				src='https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWFufGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60'
@@ -16,8 +16,8 @@ function MessageBlock() {
 				</div>
 
 				<p className={cn(styles['message__text'])}>
-					Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis, dignissimos
-					recusandae
+					Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis,
+					dignissimos recusandae
 				</p>
 			</div>
 		</div>

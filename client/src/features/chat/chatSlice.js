@@ -33,7 +33,7 @@ export const createOrGetChat = createAsyncThunk(
 // 3. Get specific chat
 export const getChatById = createAsyncThunk(
 	'chat/getChatById',
-	async (chatId, { rejectWithValue }) => {
+	async ({ chatId }, { rejectWithValue }) => {
 		try {
 			return await getChatByIdAPI(chatId)
 		} catch (error) {
@@ -131,7 +131,7 @@ const chatSlice = createSlice({
 	},
 	extraReducers: builder => {
 		builder
-			// загрузка чатов
+			// загрузка пользовательских чатов
 			.addCase(getUserChats.pending, (state, action) => {
 				if (action.meta.arg.page === 1) {
 					state.status = 'loading'
@@ -161,12 +161,9 @@ const chatSlice = createSlice({
 			.addCase(createOrGetChat.pending, state => {
 				state.status = 'loading'
 			})
-			// В extraReducers:
 			.addCase(createOrGetChat.fulfilled, (state, action) => {
 				state.status = 'succeeded'
-				const newChat = action.payload.data
-
-				// Проверяем нет ли уже такого чата
+				const newChat = action.payload.data.chat
 				const chatExists = state.chats.some(chat => chat._id === newChat._id)
 
 				if (!chatExists) {
@@ -179,9 +176,17 @@ const chatSlice = createSlice({
 				state.error = action.payload
 				state.status = 'failed'
 			})
-			// 3. getting chat by id
+			// 3. getChatById
 			.addCase(getChatById.fulfilled, (state, action) => {
-				state.currentChat = action.payload.data
+				state.status = 'succeeded'
+				const newChat = action.payload.data.chat
+				const chatExists = state.chats.some(chat => chat._id === newChat._id)
+
+				if (!chatExists) {
+					state.chats.unshift(newChat)
+				}
+
+				state.currentChat = newChat
 			})
 			// 4. getting messages
 			.addCase(getChatMessages.pending, state => {

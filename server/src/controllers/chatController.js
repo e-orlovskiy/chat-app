@@ -45,7 +45,17 @@ export const createOrGetChat = async (req, res, next) => {
 		}).populate('members', 'username')
 
 		if (existingChat) {
-			return res.status(200).json({ success: true, data: existingChat })
+			const interlocutor = existingChat.members.find(
+				member => member._id.toString() !== req.user._id.toString()
+			)
+
+			return res.status(200).json({
+				success: true,
+				data: {
+					chat: existingChat,
+					interlocutor: interlocutor
+				}
+			})
 		}
 
 		const newChat = await Chat.create({ members })
@@ -55,17 +65,29 @@ export const createOrGetChat = async (req, res, next) => {
 			{ $addToSet: { chats: newChat._id } }
 		)
 
-		res
-			.status(201)
-			.json({
-				success: true,
-				data: await Chat.findById(newChat._id).populate('members', 'username')
-			})
+		const populatedChat = await Chat.findById(newChat._id).populate(
+			'members',
+			'username'
+		)
+
+		// Получаем информацию о собеседнике для нового чата
+		const interlocutor = populatedChat.members.find(
+			member => member._id.toString() !== req.user._id.toString()
+		)
+
+		res.status(201).json({
+			success: true,
+			data: {
+				chat: populatedChat,
+				interlocutor: interlocutor
+			}
+		})
 	} catch (err) {
 		next(err)
 	}
 }
 
+// ?
 export const createGroupChat = async (req, res, next) => {
 	try {
 		const { title, members } = req.body
@@ -95,6 +117,7 @@ export const createGroupChat = async (req, res, next) => {
 	}
 }
 
+// ?
 export const joinChat = async (req, res, next) => {
 	try {
 		const chatId = req.params.id
@@ -144,9 +167,36 @@ export const getChatMessages = async (req, res, next) => {
 
 export const getChatById = async (req, res, next) => {
 	try {
-		const chat = await Chat.findById(req.params.id)
-		if (!chat) throw new Error('Чат не найден')
-		res.status(200).json({ data: chat })
+		const { chatId } = req.params
+		const userId = req.user._id
+
+		const chat = await Chat.findById(chatId).populate('members', 'username')
+
+		if (!chat) {
+			res.status(404)
+			throw new Error('Чат не найден')
+		}
+
+		const isMember = chat.members.some(
+			member => member._id.toString() === userId.toString()
+		)
+
+		if (!isMember) {
+			res.status(403)
+			throw new Error('У вас нет доступа к этому чату')
+		}
+
+		const interlocutor = chat.members.find(
+			member => member._id.toString() !== userId.toString()
+		)
+
+		res.status(200).json({
+			success: true,
+			data: {
+				chat,
+				interlocutor: interlocutor || null
+			}
+		})
 	} catch (err) {
 		next(err)
 	}

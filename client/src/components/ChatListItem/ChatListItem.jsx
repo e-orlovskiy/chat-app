@@ -26,7 +26,7 @@ function ChatListItem({
 			if (!isSearchResult && chatId) {
 				if (currentChat?._id === chatId) return
 
-				dispatch(setCurrentChat(chatId))
+				dispatch(setCurrentChat(chats.find(c => c._id === chatId)))
 				navigate(`/chat/${chatId}`)
 				return
 			}
@@ -38,8 +38,8 @@ function ChatListItem({
 				)
 
 				if (result.payload?.data) {
-					dispatch(setCurrentChat(result.payload.data._id))
-					navigate(`/chat/${result.payload.data._id}`)
+					dispatch(setCurrentChat(result.payload.data.chat))
+					navigate(`/chat/${result.payload.data.chat._id}`)
 				}
 			}
 		} finally {
