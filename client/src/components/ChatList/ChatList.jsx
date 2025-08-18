@@ -9,13 +9,13 @@ import styles from './ChatList.module.css'
 const PAGE_SIZE = 7
 
 function ChatList({ searchFocused, searchTerm, inputValue }) {
-	const dispatch = useDispatch()
-	const chatObserver = useRef()
-	const searchObserver = useRef()
-
 	const showSearch = inputValue.length > 0
 	const chatState = useSelector(state => state.chat)
 	const userState = useSelector(state => state.users)
+
+	const dispatch = useDispatch()
+	const chatObserver = useRef()
+	const searchObserver = useRef()
 
 	useEffect(() => {
 		if (!showSearch) {

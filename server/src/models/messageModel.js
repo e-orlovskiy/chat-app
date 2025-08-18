@@ -24,6 +24,7 @@ const messageSchema = mongoose.Schema(
 			default: Date.now
 		},
 		content: {
+			// в будущем будет использоваться для хранения медиафайлов
 			type: String
 		}
 	},

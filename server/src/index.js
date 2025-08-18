@@ -27,7 +27,12 @@ mongoose
 
 const app = express()
 
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }))
+app.use(
+	cors({
+		origin: [process.env.CLIENT_URL, 'http://localhost:5174'],
+		credentials: true
+	})
+)
 // app.use(morgan('dev'))
 app.use(express.json())
 app.use(cookieParser())
@@ -42,7 +47,10 @@ const port = process.env.PORT || 3000
 const server = http.createServer(app)
 
 const io = new IOServer(server, {
-	cors: { origin: process.env.CLIENT_URL, credentials: true }
+	cors: {
+		origin: [process.env.CLIENT_URL, 'http://localhost:5174'],
+		credentials: true
+	}
 })
 
 io.use((socket, next) => {
@@ -77,6 +85,7 @@ io.on('connection', socket => {
 	socket.on('joinRoom', async ({ chatId, userId, username }) => {
 		console.log(`Пользователь ${username} присоединился к комнате ${chatId}`)
 		socket.to(chatId).emit('userJoined', { chatId, userId, username })
+		socket.join(chatId)
 	})
 
 	// выход из комнаты

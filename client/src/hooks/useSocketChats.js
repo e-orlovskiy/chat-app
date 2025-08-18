@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useSocket } from '../context/socket/useSocket'
+import { addMessage } from '../features/chat/chatSlice'
 
 export const useSocketChat = () => {
 	const socket = useSocket()
 	const currentUser = useSelector(state => state.auth.user)
+	const dispatch = useDispatch()
 
 	const currentRoomRef = useRef(null)
 
@@ -60,8 +62,32 @@ export const useSocketChat = () => {
 		[socket, currentUser]
 	)
 
+	const sendMessage = useCallback(
+		messageText => {
+			if (!socket || !currentUser || !currentRoomRef.current || !messageText)
+				return
+
+			socket.emit('sendMessage', {
+				chatId: currentRoomRef.current,
+				text: messageText,
+				authorId: currentUser._id
+			})
+		},
+		[socket, currentUser]
+	)
+
 	useEffect(() => {
+		if (!socket) return
+
+		const handleNewMessage = message => {
+			console.log('New message:', message)
+			dispatch(addMessage(message))
+		}
+
+		socket.on('newMessage', handleNewMessage)
+
 		return () => {
+			socket.off('newMessage', handleNewMessage)
 			if (currentRoomRef.current && socket && currentUser) {
 				socket.emit('leaveRoom', {
 					chatId: currentRoomRef.current,
@@ -70,7 +96,7 @@ export const useSocketChat = () => {
 				})
 			}
 		}
-	}, [socket, currentUser])
+	}, [socket, currentUser, dispatch])
 
-	return { joinChat, leaveChat }
+	return { joinChat, leaveChat, sendMessage }
 }

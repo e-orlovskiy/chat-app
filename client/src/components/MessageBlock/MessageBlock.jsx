@@ -1,7 +1,16 @@
 import cn from 'classnames'
 import styles from './MessageBlock.module.css'
 
-function MessageBlock({ own = false }) {
+function MessageBlock({
+	messageText,
+	author,
+	createdAt,
+	updatedAt,
+	own
+	// avatar = ''
+}) {
+	const formattedCreatedAt = new Date(createdAt).toLocaleString()
+
 	return (
 		<div className={cn(styles['message'], { [styles['own']]: own })}>
 			<img
@@ -11,14 +20,13 @@ function MessageBlock({ own = false }) {
 			/>
 			<div className={cn(styles['message__content'])}>
 				<div className={cn(styles['message__author-and-date'])}>
-					<p className={cn(styles['message__author'])}>John Doe, </p>
-					<p className={cn(styles['message__date'])}>12:34</p>
+					<p className={cn(styles['message__author'])}>
+						{own ? 'You' : author},
+					</p>
+					<p className={cn(styles['message__date'])}>{formattedCreatedAt}</p>
 				</div>
 
-				<p className={cn(styles['message__text'])}>
-					Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis,
-					dignissimos recusandae
-				</p>
+				<p className={cn(styles['message__text'])}>{messageText}</p>
 			</div>
 		</div>
 	)

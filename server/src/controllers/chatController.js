@@ -87,7 +87,7 @@ export const createOrGetChat = async (req, res, next) => {
 	}
 }
 
-// ?
+// возможно будет реализовано в будущем
 export const createGroupChat = async (req, res, next) => {
 	try {
 		const { title, members } = req.body
@@ -117,7 +117,6 @@ export const createGroupChat = async (req, res, next) => {
 	}
 }
 
-// ?
 export const joinChat = async (req, res, next) => {
 	try {
 		const chatId = req.params.id
@@ -137,29 +136,6 @@ export const joinChat = async (req, res, next) => {
 			await chat.save()
 			res.status(200).json({ data: { chatId: chat._id } })
 		}
-	} catch (err) {
-		next(err)
-	}
-}
-
-export const getChatMessages = async (req, res, next) => {
-	try {
-		const chatId = req.params.id
-		const userId = req.user._id
-
-		const chat = await Chat.findById(chatId)
-		if (!chat) {
-			res.status(404)
-			throw new Error('Чат не найден')
-		}
-		if (!chat.members.includes(userId)) {
-			res.status(403)
-			throw new Error('У вас нет доступа к этому чату')
-		}
-
-		const messages = await Message.find({ chat: chatId })
-
-		res.status(200).json({ data: messages })
 	} catch (err) {
 		next(err)
 	}
@@ -197,6 +173,44 @@ export const getChatById = async (req, res, next) => {
 				interlocutor: interlocutor || null
 			}
 		})
+	} catch (err) {
+		next(err)
+	}
+}
+
+export const getChatMessages = async (req, res, next) => {
+	try {
+		const chatId = req.params.id
+		const userId = req.user._id
+		const page = Number(req.query.page) || 1
+		const limit = Number(req.query.limit) || 25
+		const skip = (page - 1) * limit
+
+		const chat = await Chat.findById(chatId)
+
+		if (!chat) {
+			res.status(404)
+			throw new Error('Чат не найден')
+		}
+
+		if (!chat.members.includes(userId)) {
+			res.status(403)
+			throw new Error('У вас нет доступа к этому чату')
+		}
+
+		const totalCount = await Message.countDocuments({ chat: chatId })
+
+		const messages = await Message.find({ chat: chatId })
+			.skip(skip)
+			.limit(limit)
+			.sort({ createdAt: -1 })
+			.populate('author', 'username avatar _id')
+
+		const hasMore = totalCount > skip + limit
+
+		res
+			.status(200)
+			.json({ data: messages.reverse(), hasMore, page, totalCount })
 	} catch (err) {
 		next(err)
 	}

@@ -63,7 +63,9 @@ const chatSlice = createSlice({
 		status: 'idle',
 		error: null,
 		currentPage: 1,
+		messagesPage: 1,
 		hasMore: true,
+		messagesHasMore: true,
 		loadingMore: false,
 		messagesLoading: false,
 		onlineUsers: [],
@@ -71,23 +73,12 @@ const chatSlice = createSlice({
 	},
 	reducers: {
 		addMessage: (state, action) => {
-			if (state.currentChat && action.payload.chat === state.currentChat._id) {
-				state.messages.push(action.payload)
-			}
-
-			const chatIndex = state.chats.findIndex(
-				chat => chat._id === action.payload.chat
-			)
-			if (chatIndex !== -1) {
-				state.chats[chatIndex].lastMessage = {
-					text: action.payload.text,
-					createdAt: action.payload.createdAt
-				}
-
-				const updatedChat = state.chats[chatIndex]
-				state.chats.splice(chatIndex, 1)
-				state.chats.unshift(updatedChat)
-			}
+			state.messages.push(action.payload)
+		},
+		resetMessages: state => {
+			state.messages = []
+			state.messagesPage = 1
+			state.messagesHasMore = true
 		},
 		updateUserStatus: (state, action) => {
 			const { userId, status } = action.payload
@@ -120,13 +111,16 @@ const chatSlice = createSlice({
 			state.currentChat = action.payload
 			state.messages = []
 		},
+		resetChatState: state => {
+			state.currentChat = null
+			state.messages = []
+			state.messagesHasMore = true
+			state.messagesLoading = false
+		},
 		resetChats: state => {
 			state.chats = []
 			state.currentPage = 1
 			state.hasMore = true
-		},
-		clearMessages: state => {
-			state.messages = []
 		}
 	},
 	extraReducers: builder => {
@@ -193,13 +187,15 @@ const chatSlice = createSlice({
 				state.messagesLoading = true
 			})
 			.addCase(getChatMessages.fulfilled, (state, action) => {
-				const { data, page } = action.payload
+				const { data, page, hasMore } = action.payload
 				if (page === 1) {
 					state.messages = data
 				} else {
 					state.messages = [...data, ...state.messages]
 				}
 				state.messagesLoading = false
+				state.messagesPage = page
+				state.messagesHasMore = hasMore
 			})
 			.addCase(getChatMessages.rejected, (state, action) => {
 				state.error = action.payload
@@ -210,10 +206,11 @@ const chatSlice = createSlice({
 
 export const {
 	addMessage,
+	resetMessages,
 	setCurrentChat,
 	resetChats,
 	updateUserStatus,
 	setUserTyping,
-	clearMessages
+	resetChatState
 } = chatSlice.actions
 export default chatSlice.reducer

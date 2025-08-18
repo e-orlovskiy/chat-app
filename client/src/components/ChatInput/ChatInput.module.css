@@ -1,9 +1,10 @@
 .chat-input {
-	margin-top: var(--offset-m);
+	/* margin-top: var(--offset-m); */
 	display: flex;
 	width: 100%;
 	background: var(--primary-color);
 	border-radius: var(--border-radius-l);
+	flex-shrink: 0;
 }
 
 .chat-input__input {

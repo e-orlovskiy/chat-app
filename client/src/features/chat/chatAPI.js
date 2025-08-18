@@ -34,7 +34,7 @@ export const createOrGetChatAPI = async members => {
 	}
 }
 
-export const getChatMessagesAPI = async (chatId, page = 1, limit = 50) => {
+export const getChatMessagesAPI = async (chatId, page = 1, limit = 25) => {
 	try {
 		const response = await axios.get(`${CHAT_URL}/${chatId}/messages`, {
 			...config,
