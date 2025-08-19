@@ -22,7 +22,8 @@ function Auth() {
 	useEffect(() => {
 		console.log(location.pathname)
 		if (!formsContRef.current) return
-		if (location.pathname.includes('register')) formsContRef.current.scrollLeft = 450
+		if (location.pathname.includes('register'))
+			formsContRef.current.scrollLeft = 450
 		else formsContRef.current.scrollLeft = 0
 	}, [location])
 
@@ -37,7 +38,10 @@ function Auth() {
 					<TbMessageDots className={cn(styles['icon'])} />
 				</section>
 				<section className={cn(styles['section-3'], styles['section'])}>
-					<Register formData={registerFormData} setFormData={setRegisterFormData} />
+					<Register
+						formData={registerFormData}
+						setFormData={setRegisterFormData}
+					/>
 				</section>
 			</div>
 		</div>
