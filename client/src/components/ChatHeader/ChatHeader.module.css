@@ -35,3 +35,7 @@
 	height: 1.5px;
 	background: var(--my-message-bg-color);
 }
+
+.participants {
+	cursor: not-allowed !important;
+}

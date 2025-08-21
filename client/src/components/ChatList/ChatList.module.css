@@ -7,7 +7,7 @@
 .chats-list {
 	display: flex;
 	flex-direction: column;
-	gap: var(--offset-s);
+	gap: var(--offset-xs);
 	height: 100%;
 	flex: 1;
 	overflow-y: auto;
@@ -28,7 +28,8 @@
 .chats-list.hidden {
 	opacity: 0;
 	visibility: hidden;
-	transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 0.4s;
+	transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+		visibility 0s linear 0.4s;
 }
 
 .chats-focused {

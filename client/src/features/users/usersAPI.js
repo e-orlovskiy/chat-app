@@ -1,7 +1,5 @@
-import axios from 'axios'
-import { SERVER_URL } from '../../utils/config'
+import api from '../../api/axios'
 
-const USERS_URL = `${SERVER_URL}/users`
 const config = { withCredentials: true }
 
 export const searchUsersAPI = async (username, page = 1, limit = 7) => {
@@ -9,7 +7,7 @@ export const searchUsersAPI = async (username, page = 1, limit = 7) => {
 		return { data: [], page, hasMore: false }
 	}
 	try {
-		const response = await axios.get(`${USERS_URL}/search`, {
+		const response = await api.get(`users/search`, {
 			...config,
 			params: { username, page, limit }
 		})

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { io } from 'socket.io-client'
-import { SERVER_URL } from '../../utils/config'
+import { SERVER_URL } from '../../api/config'
 import SocketContext from './socketContext'
 
 export const SocketProvider = ({ children }) => {

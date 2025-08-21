@@ -15,7 +15,14 @@ const ChatHeader = memo(({ interlocutor }) => {
 					<li className={cn(styles['chat-window__action'], styles['active'])}>
 						Messages
 					</li>
-					<li className={styles['chat-window__action']}>Participants</li>
+					<li
+						className={cn(
+							styles['chat-window__action'],
+							styles['participants']
+						)}
+					>
+						Participants
+					</li>
 				</ul>
 			</div>
 			<div className={styles['chat-window__underline']}></div>

@@ -11,7 +11,7 @@ const ProtectedRoute = () => {
 		if (status === 'idle') dispatch(checkAuth())
 	}, [dispatch, status])
 
-	if (status === 'idle' || status === 'loading') return <p>Loading...</p>
+	if (status === 'loading') return <p>Loading...</p>
 	if (!user) return <Navigate to='/auth/login' replace />
 
 	return <Outlet />

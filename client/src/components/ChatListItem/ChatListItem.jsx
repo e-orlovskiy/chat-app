@@ -22,7 +22,6 @@ function ChatListItem({
 		setIsLoading(true)
 
 		try {
-			// для существующих чатов
 			if (!isSearchResult && chatId) {
 				if (currentChat?._id === chatId) return
 
@@ -31,7 +30,6 @@ function ChatListItem({
 				return
 			}
 
-			// для результатов поиска
 			if (isSearchResult && userId) {
 				const result = await dispatch(
 					createOrGetChat({ members: [currentUser._id, userId] })

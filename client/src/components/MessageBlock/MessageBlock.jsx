@@ -1,10 +1,10 @@
 import cn from 'classnames'
+import { formatDate } from '../../utils/formatTime'
 import styles from './MessageBlock.module.css'
 
 function MessageBlock({ messageText, author, createdAt, updatedAt, own }) {
-	const formattedCreatedAt = createdAt
-		? new Date(createdAt).toLocaleString()
-		: ''
+	const formattedCreatedAt = formatDate(createdAt)
+	const formattedUpdatedAt = formatDate(updatedAt)
 
 	return (
 		<div className={cn(styles['message'], { [styles['own']]: own })}>
@@ -16,7 +16,7 @@ function MessageBlock({ messageText, author, createdAt, updatedAt, own }) {
 			<div className={cn(styles['message__content'])}>
 				<div className={cn(styles['message__author-and-date'])}>
 					<p className={cn(styles['message__author'])}>
-						{own ? 'You' : author}
+						{own ? 'You,' : `${author},`}
 					</p>
 					<p className={cn(styles['message__date'])}>{formattedCreatedAt}</p>
 				</div>

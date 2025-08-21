@@ -1,10 +1,9 @@
-import axios from 'axios'
-import { SERVER_URL } from '../../utils/config'
+import api from '../../api/axios'
 
 export const loginUserAPI = async (email, password) => {
 	try {
-		const response = await axios.post(
-			`${SERVER_URL}/auth/login`,
+		const response = await api.post(
+			`auth/login`,
 			{ email, password },
 			{
 				withCredentials: true
@@ -18,8 +17,8 @@ export const loginUserAPI = async (email, password) => {
 
 export const registerUserAPI = async (username, email, password) => {
 	try {
-		const response = await axios.post(
-			`${SERVER_URL}/auth/register`,
+		const response = await api.post(
+			`auth/register`,
 			{ username, email, password },
 			{ withCredentials: true }
 		)
@@ -31,11 +30,26 @@ export const registerUserAPI = async (username, email, password) => {
 
 export const checkAuthAPI = async () => {
 	try {
-		const response = await axios.get(`${SERVER_URL}/auth/check-auth`, {
+		const response = await api.get(`auth/check-auth`, {
 			withCredentials: true
 		})
 		return response.data
 	} catch (error) {
 		throw new Error(error.response?.data?.message || 'Auth check failed')
+	}
+}
+
+export const logoutAPI = async () => {
+	try {
+		const response = await api.post(
+			`auth/logout`,
+			{},
+			{
+				withCredentials: true
+			}
+		)
+		return response.data
+	} catch (error) {
+		throw new Error(error.response?.data?.message || 'Logout failed')
 	}
 }

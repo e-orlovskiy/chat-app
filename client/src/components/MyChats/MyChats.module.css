@@ -37,6 +37,7 @@
 	padding: var(--offset-xs);
 	border-radius: var(--border-radius-m);
 	color: var(--green-color);
+	cursor: not-allowed;
 }
 
 .searchingDots::after {

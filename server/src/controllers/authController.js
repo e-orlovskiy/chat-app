@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken'
 import User from '../models/userModel.js'
 import { generateTokens } from '../utils/generateTokens.js'
 
@@ -54,8 +55,6 @@ export const login = async (req, res, next) => {
 			throw new Error('Неверный email или пароль')
 		}
 
-		console.log(password)
-		console.log(user.password)
 		const isMatch = await user.correctPassword(password, user.password)
 		console.log(isMatch)
 		if (!isMatch) {
@@ -97,5 +96,58 @@ export const checkAuth = async (req, res, next) => {
 		})
 	} catch (err) {
 		next(err)
+	}
+}
+
+export const logout = async (req, res, next) => {
+	try {
+		res.clearCookie('refreshToken')
+		res.clearCookie('accessToken')
+		res.status(200).json({ message: 'Вы успешно вышли из аккаунта' })
+	} catch (err) {
+		next(err)
+	}
+}
+
+export const refreshToken = async (req, res, next) => {
+	try {
+		const { refreshToken } = req.cookies
+
+		if (!refreshToken) {
+			res.status(401)
+			throw new Error('Вы не авторизованы. Пожалуйста, войдите снова.')
+		}
+
+		const decoded = jwt.verify(
+			refreshToken,
+			process.env.JWT_REFRESH_TOKEN_SECRET
+		)
+
+		const user = await User.findById(decoded.id)
+
+		if (!user) {
+			res.status(401)
+			throw new Error('Вы не авторизованы. Пожалуйста, войдите снова.')
+		}
+
+		const tokens = generateTokens(user._id)
+
+		res.cookie('refreshToken', tokens.refreshToken, {
+			maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
+			httpOnly: true
+		})
+
+		res.cookie('accessToken', tokens.accessToken, {
+			maxAge: 500 * 60 * 1000, // 500 минут
+			httpOnly: true
+		})
+
+		res.json({
+			_id: user._id,
+			username: user.username,
+			email: user.email
+		})
+	} catch (error) {
+		next(error)
 	}
 }

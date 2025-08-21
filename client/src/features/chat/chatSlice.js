@@ -1,5 +1,5 @@
-// src/features/chat/chatSlice.js
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { logoutUser } from '../auth/authSlice'
 import {
 	createOrGetChatAPI,
 	getChatByIdAPI,
@@ -162,6 +162,21 @@ const chatSlice = createSlice({
 	},
 	extraReducers: builder => {
 		builder
+			.addCase(logoutUser.fulfilled, state => {
+				state.chats = []
+				state.currentChat = null
+				state.messages = []
+				state.status = 'idle'
+				state.error = null
+				state.currentPage = 1
+				state.messagesPage = 0
+				state.hasMore = true
+				state.messagesHasMore = true
+				state.loadingMore = false
+				state.messagesLoading = false
+				state.onlineUsers = []
+				state.typingUsers = []
+			})
 			// getUserChats
 			.addCase(getUserChats.pending, (state, action) => {
 				if (action.meta.arg.page === 1) {

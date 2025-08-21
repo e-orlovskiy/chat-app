@@ -10,14 +10,22 @@ function MyChats({ searchFocused, searchTerm, inputValue }) {
 			<div className={cn(styles['chats-info'])}>
 				{!searchFocused && <h4 className={cn(styles['chats-title'])}>chats</h4>}
 				{searchFocused && (
-					<h4 className={cn(styles['chats-title'], cn(styles['searchingDots']))}>searching</h4>
+					<h4
+						className={cn(styles['chats-title'], cn(styles['searchingDots']))}
+					>
+						searching
+					</h4>
 				)}
 				<div className={cn(styles['chats-controls'])}>
 					<IoIosAdd className={cn(styles['chat-controls__icon'])} />
 					<LuSettings2 className={cn(styles['chat-controls__icon'])} />
 				</div>
 			</div>
-			<ChatList searchFocused={searchFocused} searchTerm={searchTerm} inputValue={inputValue} />
+			<ChatList
+				searchFocused={searchFocused}
+				searchTerm={searchTerm}
+				inputValue={inputValue}
+			/>
 		</div>
 	)
 }

@@ -1,17 +1,15 @@
-import axios from 'axios'
-import { SERVER_URL } from '../../utils/config'
+import api from '../../api/axios'
 
-const CHAT_URL = `${SERVER_URL}/chats`
 const config = { withCredentials: true }
 
 export const getChatByIdAPI = async chatId => {
-	const res = await axios.get(`${CHAT_URL}/${chatId}`, config)
+	const res = await api.get(`chats/${chatId}`, config)
 	return res.data
 }
 
 export const getUserChatsAPI = async (page = 1, limit = 10) => {
 	try {
-		const response = await axios.get(CHAT_URL, {
+		const response = await api.get('chats', {
 			...config,
 			params: { page, limit }
 		})
@@ -23,8 +21,8 @@ export const getUserChatsAPI = async (page = 1, limit = 10) => {
 
 export const createOrGetChatAPI = async members => {
 	try {
-		const response = await axios.post(
-			`${CHAT_URL}/create-or-get-chat`,
+		const response = await api.post(
+			`chats/create-or-get-chat`,
 			{ members },
 			config
 		)
@@ -36,7 +34,7 @@ export const createOrGetChatAPI = async members => {
 
 export const getChatMessagesAPI = async (chatId, page = 1, limit = 25) => {
 	try {
-		const response = await axios.get(`${CHAT_URL}/${chatId}/messages`, {
+		const response = await api.get(`chats/${chatId}/messages`, {
 			...config,
 			params: { page, limit }
 		})
