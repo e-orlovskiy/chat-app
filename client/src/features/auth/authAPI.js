@@ -29,14 +29,10 @@ export const registerUserAPI = async (username, email, password) => {
 }
 
 export const checkAuthAPI = async () => {
-	try {
-		const response = await api.get(`auth/check-auth`, {
-			withCredentials: true
-		})
-		return response.data
-	} catch (error) {
-		throw new Error(error.response?.data?.message || 'Auth check failed')
-	}
+	const response = await api.get(`auth/check-auth`, {
+		withCredentials: true
+	})
+	return response.data
 }
 
 export const logoutAPI = async () => {

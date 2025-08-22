@@ -9,9 +9,9 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
-	getChatById,
 	getChatMessages,
-	resetMessages
+	resetMessages,
+	setCurrentChat
 } from '../../features/chat/chatSlice'
 import { useSocketChat } from '../../hooks/useSocketChats'
 import ChatHeader from '../ChatHeader/ChatHeader'
@@ -25,6 +25,7 @@ function Chat() {
 	const [messageText, setMessageText] = useState('')
 	const [interlocutor, setInterlocutor] = useState(null)
 	const [initialLoad, setInitialLoad] = useState(true)
+	const chats = useSelector(state => state.chat.chats)
 
 	const navigate = useNavigate()
 	const dispatch = useDispatch()
@@ -77,22 +78,24 @@ function Chat() {
 
 		joinChat(chatId)
 		dispatch(resetMessages())
+		dispatch(setCurrentChat(chats.find(c => c._id === chatId)))
 		dispatch(getChatMessages({ chatId, page: 1, limit: 20 }))
 
-		dispatch(getChatById({ userId: currentUser._id, chatId }))
-			.unwrap()
-			.then(result => {
-				if (result?.data) setInterlocutor(result.data.interlocutor)
-			})
-			.catch(err => {
-				console.error('getChatById failed', err)
-				navigate('/404', { replace: true })
-			})
-
 		return () => {
+			dispatch(resetMessages())
 			leaveChat(chatId)
+			setInterlocutor(null)
 		}
-	}, [chatId, currentUser._id, dispatch, navigate, joinChat, leaveChat])
+	}, [chatId, currentUser._id, dispatch, navigate, joinChat, leaveChat, chats])
+
+	useEffect(() => {
+		if (currentChat?.members && currentUser) {
+			const foundInterlocutor = currentChat.members.find(
+				member => member._id !== currentUser._id
+			)
+			setInterlocutor(foundInterlocutor || null)
+		}
+	}, [currentChat, currentUser])
 
 	useLayoutEffect(() => {
 		if (chatMessages.length > 0 && initialLoad) {

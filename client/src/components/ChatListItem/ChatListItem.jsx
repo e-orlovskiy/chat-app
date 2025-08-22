@@ -1,7 +1,7 @@
 import { memo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { createOrGetChat, setCurrentChat } from '../../features/chat/chatSlice'
+import { createOrGetChat } from '../../features/chat/chatSlice'
 import styles from './ChatListItem.module.css'
 
 function ChatListItem({
@@ -24,19 +24,17 @@ function ChatListItem({
 		try {
 			if (!isSearchResult && chatId) {
 				if (currentChat?._id === chatId) return
-
-				dispatch(setCurrentChat(chats.find(c => c._id === chatId)))
 				navigate(`/chat/${chatId}`)
-				return
 			}
 
 			if (isSearchResult && userId) {
+				if (currentChat.members.some(m => m._id === userId)) return
+
 				const result = await dispatch(
 					createOrGetChat({ members: [currentUser._id, userId] })
 				)
 
 				if (result.payload?.data) {
-					dispatch(setCurrentChat(result.payload.data.chat))
 					navigate(`/chat/${result.payload.data.chat._id}`)
 				}
 			}

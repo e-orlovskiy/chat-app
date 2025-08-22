@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { logoutUser } from '../auth/authSlice'
 import {
 	createOrGetChatAPI,
-	getChatByIdAPI,
 	getChatMessagesAPI,
 	getUserChatsAPI
 } from './chatAPI'
@@ -25,18 +24,6 @@ export const createOrGetChat = createAsyncThunk(
 	async ({ members }, { rejectWithValue }) => {
 		try {
 			return await createOrGetChatAPI(members)
-		} catch (error) {
-			return rejectWithValue(error.message)
-		}
-	}
-)
-
-// 3. Get specific chat
-export const getChatById = createAsyncThunk(
-	'chat/getChatById',
-	async ({ chatId }, { rejectWithValue }) => {
-		try {
-			return await getChatByIdAPI(chatId)
 		} catch (error) {
 			return rejectWithValue(error.message)
 		}
@@ -195,8 +182,8 @@ const chatSlice = createSlice({
 				state.status = 'succeeded'
 				state.loadingMore = false
 			})
-			.addCase(getUserChats.rejected, (state, action) => {
-				state.error = action.payload
+			.addCase(getUserChats.rejected, state => {
+				state.error = 'Error fetching user chats!'
 				state.status = 'failed'
 				state.loadingMore = false
 			})
@@ -210,26 +197,9 @@ const chatSlice = createSlice({
 				const newChat = action.payload.data.chat
 				const chatExists = state.chats.some(chat => chat._id === newChat._id)
 				if (!chatExists) state.chats.unshift(newChat)
-				state.currentChat = newChat
 			})
-			.addCase(createOrGetChat.rejected, (state, action) => {
-				state.error = action.payload
-				state.status = 'failed'
-			})
-
-			// getChatById
-			.addCase(getChatById.pending, state => {
-				state.status = 'loading'
-			})
-			.addCase(getChatById.fulfilled, (state, action) => {
-				state.status = 'succeeded'
-				const newChat = action.payload.data.chat
-				const chatExists = state.chats.some(chat => chat._id === newChat._id)
-				if (!chatExists) state.chats.unshift(newChat)
-				state.currentChat = newChat
-			})
-			.addCase(getChatById.rejected, (state, action) => {
-				state.error = action.payload
+			.addCase(createOrGetChat.rejected, state => {
+				state.error = 'Error while creating or getting chat'
 				state.status = 'failed'
 			})
 
@@ -248,8 +218,8 @@ const chatSlice = createSlice({
 				state.messagesPage = page
 				state.messagesHasMore = hasMore
 			})
-			.addCase(getChatMessages.rejected, (state, action) => {
-				state.error = action.payload
+			.addCase(getChatMessages.rejected, state => {
+				state.error = 'Error fetching chat messages!'
 				state.messagesLoading = false
 				state.loadingMore = false
 			})
