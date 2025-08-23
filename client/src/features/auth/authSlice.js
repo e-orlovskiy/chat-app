@@ -44,6 +44,11 @@ const authSlice = createSlice({
 		},
 		clearError: state => {
 			state.error = null
+		},
+		fullReset: state => {
+			state.user = null
+			state.status = 'idle'
+			state.error = null
 		}
 	},
 	extraReducers: builder => {
@@ -84,10 +89,10 @@ const authSlice = createSlice({
 			.addCase(logoutUser.pending, state => {
 				state.status = 'loading'
 			})
-			.addCase(logoutUser.fulfilled, (state, action) => {
+			.addCase(logoutUser.fulfilled, state => {
 				state.user = null
 				state.status = 'idle'
-				state.error = action.error.message
+				state.error = null
 			})
 			.addCase(logoutUser.rejected, (state, action) => {
 				state.error = action.error.message
@@ -96,5 +101,6 @@ const authSlice = createSlice({
 	}
 })
 
-export const { logout, setUser, clearError, setError } = authSlice.actions
+export const { logout, setUser, clearError, setError, fullReset } =
+	authSlice.actions
 export default authSlice.reducer

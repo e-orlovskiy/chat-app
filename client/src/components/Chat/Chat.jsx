@@ -8,6 +8,7 @@ import {
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
+import { getHasRefreshFailed } from '../../api/axios'
 import {
 	getChatMessages,
 	resetMessages,
@@ -33,7 +34,6 @@ function Chat() {
 	const messagesEndRef = useRef(null)
 	const messagesTopRef = useRef(null)
 	const scrollContainerRef = useRef(null)
-	const observerRef = useRef(null)
 	const isPaginatingRef = useRef(false)
 
 	const {
@@ -113,7 +113,6 @@ function Chat() {
 
 	useEffect(() => {
 		if (!scrollContainerRef.current || !messagesTopRef.current) return
-
 		const container = scrollContainerRef.current
 
 		const observer = new IntersectionObserver(
@@ -124,32 +123,36 @@ function Chat() {
 					!messagesLoading &&
 					!isPaginatingRef.current
 				) {
+					if (getHasRefreshFailed()) {
+						return
+					}
+
 					isPaginatingRef.current = true
 					const oldScrollHeight = container.scrollHeight
 
-					await dispatch(
-						getChatMessages({
-							chatId,
-							page: messagesPage + 1,
-							limit: 20
+					try {
+						await dispatch(
+							getChatMessages({
+								chatId,
+								page: messagesPage + 1,
+								limit: 20
+							})
+						)
+					} catch (err) {
+						console.error('Failed to load messages page:', err)
+					} finally {
+						requestAnimationFrame(() => {
+							container.scrollTop = container.scrollHeight - oldScrollHeight
+							isPaginatingRef.current = false
 						})
-					)
-
-					requestAnimationFrame(() => {
-						container.scrollTop = container.scrollHeight - oldScrollHeight
-						isPaginatingRef.current = false
-					})
+					}
 				}
 			},
-			{ root: container, rootMargin: '100px', threshold: 0 }
+			{ root: container, rootMargin: '0px', threshold: 0 }
 		)
 
 		observer.observe(messagesTopRef.current)
-		observerRef.current = observer
-
-		return () => {
-			observer.disconnect()
-		}
+		return () => observer.disconnect()
 	}, [chatId, messagesHasMore, messagesLoading, messagesPage, dispatch])
 
 	if (chatStatus === 'loading') {

@@ -34,8 +34,8 @@ api.interceptors.response.use(
 		) {
 			if (isRefreshing) {
 				return new Promise((resolve, reject) => {
-					failedQueue.push({ resolve, reject, originalRequest })
-				})
+					failedQueue.push({ resolve, reject })
+				}).then(() => api(originalRequest))
 			}
 
 			originalRequest._retry = true
@@ -49,10 +49,7 @@ api.interceptors.response.use(
 			} catch (refreshError) {
 				isRefreshing = false
 				processQueue(refreshError)
-
 				hasRefreshFailed = true
-
-				failedQueue = []
 
 				return Promise.reject(refreshError)
 			}
@@ -68,6 +65,10 @@ api.interceptors.response.use(
 
 export const resetRefreshFlag = () => {
 	hasRefreshFailed = false
+}
+
+export const getHasRefreshFailed = () => {
+	return hasRefreshFailed
 }
 
 export default api

@@ -1,4 +1,3 @@
-// GlobalErrorHandler.jsx
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -9,8 +8,7 @@ const GlobalErrorHandler = () => {
 	const chatError = useSelector(state => state.chat.error)
 
 	useEffect(() => {
-		console.log('test')
-		if (authError?.includes('401') || chatError?.includes('401')) {
+		if (authError?.type === 'auth' || chatError?.type === 'auth') {
 			navigate('/auth/login', { replace: true })
 		}
 	}, [authError, chatError, navigate])

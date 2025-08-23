@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { IoIosArrowDown, IoIosSettings } from 'react-icons/io'
 import { MdDarkMode, MdLightMode, MdOutlineExitToApp } from 'react-icons/md'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import { useSocket } from '../../context/socket/useSocket'
 import { useTheme } from '../../context/theme/useTheme'
 import { logoutUser } from '../../features/auth/authSlice'
@@ -24,7 +25,12 @@ const Profile = () => {
 	const { theme, toggleTheme } = useTheme()
 	const socket = useSocket()
 
-	const handleLogout = () => dispatch(logoutUser())
+	const navigate = useNavigate()
+
+	const handleLogout = () => {
+		navigate('/auth/login')
+		dispatch(logoutUser())
+	}
 
 	const handleToggleSettingsDropdown = () =>
 		setIsSettingsDropDownOpen(prev => !prev)

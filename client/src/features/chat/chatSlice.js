@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { normalizeError } from '../../utils/normalizeError'
 import { logoutUser } from '../auth/authSlice'
 import {
 	createOrGetChatAPI,
@@ -13,7 +14,7 @@ export const getUserChats = createAsyncThunk(
 		try {
 			return await getUserChatsAPI(page, limit)
 		} catch (err) {
-			return rejectWithValue(err.message)
+			return rejectWithValue(normalizeError(err))
 		}
 	}
 )
@@ -25,7 +26,7 @@ export const createOrGetChat = createAsyncThunk(
 		try {
 			return await createOrGetChatAPI(members)
 		} catch (error) {
-			return rejectWithValue(error.message)
+			return rejectWithValue(normalizeError(error))
 		}
 	}
 )
@@ -37,7 +38,7 @@ export const getChatMessages = createAsyncThunk(
 		try {
 			return await getChatMessagesAPI(chatId, page, limit)
 		} catch (error) {
-			return rejectWithValue(error.message)
+			return rejectWithValue(normalizeError(error))
 		}
 	},
 	{
@@ -145,24 +146,27 @@ const chatSlice = createSlice({
 			state.chats = []
 			state.currentPage = 1
 			state.hasMore = true
+		},
+
+		fullReset: state => {
+			state.chats = []
+			state.currentPage = 1
+			state.hasMore = true
+			state.currentChat = null
+			state.messages = []
+			state.messagesPage = 0
+			state.messagesHasMore = true
+			state.messagesLoading = false
+			state.loadingMore = false
+			state.onlineUsers = []
+			state.typingUsers = []
 		}
 	},
 	extraReducers: builder => {
 		builder
+			// logout
 			.addCase(logoutUser.fulfilled, state => {
-				state.chats = []
-				state.currentChat = null
-				state.messages = []
-				state.status = 'idle'
-				state.error = null
-				state.currentPage = 1
-				state.messagesPage = 0
-				state.hasMore = true
-				state.messagesHasMore = true
-				state.loadingMore = false
-				state.messagesLoading = false
-				state.onlineUsers = []
-				state.typingUsers = []
+				chatSlice.caseReducers.fullReset(state)
 			})
 			// getUserChats
 			.addCase(getUserChats.pending, (state, action) => {
@@ -182,8 +186,8 @@ const chatSlice = createSlice({
 				state.status = 'succeeded'
 				state.loadingMore = false
 			})
-			.addCase(getUserChats.rejected, state => {
-				state.error = 'Error fetching user chats!'
+			.addCase(getUserChats.rejected, (state, action) => {
+				state.error = action.payload
 				state.status = 'failed'
 				state.loadingMore = false
 			})
@@ -198,8 +202,8 @@ const chatSlice = createSlice({
 				const chatExists = state.chats.some(chat => chat._id === newChat._id)
 				if (!chatExists) state.chats.unshift(newChat)
 			})
-			.addCase(createOrGetChat.rejected, state => {
-				state.error = 'Error while creating or getting chat'
+			.addCase(createOrGetChat.rejected, (state, action) => {
+				state.error = action.payload
 				state.status = 'failed'
 			})
 
@@ -218,8 +222,8 @@ const chatSlice = createSlice({
 				state.messagesPage = page
 				state.messagesHasMore = hasMore
 			})
-			.addCase(getChatMessages.rejected, state => {
-				state.error = 'Error fetching chat messages!'
+			.addCase(getChatMessages.rejected, (state, action) => {
+				state.error = action.payload
 				state.messagesLoading = false
 				state.loadingMore = false
 			})
@@ -233,6 +237,7 @@ export const {
 	resetChats,
 	updateUserStatus,
 	setUserTyping,
-	resetChatState
+	resetChatState,
+	fullReset
 } = chatSlice.actions
 export default chatSlice.reducer
