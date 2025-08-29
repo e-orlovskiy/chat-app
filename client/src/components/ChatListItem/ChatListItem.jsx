@@ -28,7 +28,7 @@ function ChatListItem({
 			}
 
 			if (isSearchResult && userId) {
-				if (currentChat.members.some(m => m._id === userId)) return
+				if (currentChat?.members?.some(m => m._id === userId)) return
 
 				const result = await dispatch(
 					createOrGetChat({ members: [currentUser._id, userId] })

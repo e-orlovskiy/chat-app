@@ -31,6 +31,24 @@
 	flex-direction: column;
 	flex: 1;
 	min-height: 0;
-	gap: var(--offset-m);
+	gap: var(--offset-s);
 	overflow-y: auto;
+}
+
+.date-group {
+	display: flex;
+	flex-direction: column;
+	gap: var(--offset-xs);
+	position: relative;
+}
+
+.date-group__header {
+	position: sticky;
+	top: var(--offset-s);
+	margin: 0 auto;
+	padding: var(--offset-xs) var(--offset-s);
+	border-radius: var(--border-radius-m);
+	background: var(--input-text-light-color);
+	color: var(--input-text-color);
+	box-shadow: var(--group-element-shadow);
 }

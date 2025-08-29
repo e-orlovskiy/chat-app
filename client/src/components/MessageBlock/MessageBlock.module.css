@@ -3,6 +3,9 @@
 	gap: var(--offset-s);
 	max-width: 60%;
 	align-self: flex-start;
+	flex-shrink: 0;
+	outline: none;
+	position: relative;
 }
 
 .message.own {
@@ -10,15 +13,19 @@
 	margin-right: var(--offset-xs);
 }
 
-.message__text {
+.message__text-container {
 	position: relative;
 	background: var(--primary-color);
 	border-radius: var(--border-radius-l);
-	padding: 10px 15px;
-	filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+	padding: var(--offset-s) var(--offset-m);
 }
 
-.message__text::after {
+.message__text-container::after {
+	display: none;
+}
+
+.message.last-message .message__text-container::after {
+	display: block;
 	content: '';
 	position: absolute;
 	bottom: 10px;
@@ -35,13 +42,14 @@
 	overflow-wrap: break-word;
 	word-break: break-word;
 	hyphens: auto;
+	color: var(--input-text-color);
 }
 
-.message.own .message__text {
+.message.own .message__text-container {
 	background: var(--my-message-bg-color);
 }
 
-.message.own .message__text::after {
+.message.own .message__text-container::after {
 	left: auto;
 	right: -10px;
 	clip-path: polygon(0 100%, 100% 100%, 0 0);
@@ -61,8 +69,21 @@
 	margin-bottom: var(--offset-s);
 }
 
+.message__temp-blank {
+	display: flex;
+	width: 35px;
+	height: 35px;
+	flex-grow: 0;
+	flex-shrink: 0;
+	align-self: flex-end;
+}
+
 .message.own .message__avatar {
 	order: 2;
+}
+
+.message.own .message__temp-blank {
+	order: 1;
 }
 
 .message__content {
@@ -72,7 +93,7 @@
 	width: fit-content;
 }
 
-.message__author-and-date {
+/* .message__author-and-date {
 	display: flex;
 	gap: var(--offset-xs);
 	align-items: center;
@@ -81,10 +102,23 @@
 
 .message.own .message__author-and-date {
 	justify-content: flex-end;
-}
+} */
 
-.message__author,
+/* .message__author,
 .message__date {
 	font-size: var(--font-size-s);
 	color: var(--text-color);
+} */
+
+.message__date {
+	display: flex;
+	font-size: var(--font-size-xxs);
+	justify-content: flex-start;
+	text-align: right;
+	/* color: var(--input-text-light-color); */
+	color: var(--my-message-date-color);
+}
+
+.message.own .message__date {
+	justify-content: flex-end;
 }

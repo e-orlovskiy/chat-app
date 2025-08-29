@@ -1,6 +1,6 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
 import Chat from '../components/Chat/Chat'
-import GlobalErrorHandler from '../components/GlobalErrorHandler'
+import GlobalNotificationHandler from '../components/GlobalNotificationHandler'
 import ProtectedRoute from '../components/ProtectedRoute'
 import MainLayout from '../layouts/MainLayout/MainLayout'
 import Auth from '../pages/Auth/Auth'
@@ -11,34 +11,40 @@ export const router = createBrowserRouter([
 		path: '/',
 		element: (
 			<>
-				<ProtectedRoute />
-				<GlobalErrorHandler />
+				<Outlet />
+				<GlobalNotificationHandler />
 			</>
 		),
 		children: [
 			{
 				path: '/',
-				element: <MainLayout />,
+				element: <ProtectedRoute />,
 				children: [
 					{
-						path: 'chat/:chatId',
-						element: <Chat />
+						path: '/',
+						element: <MainLayout />,
+						children: [
+							{
+								path: 'chat/:chatId',
+								element: <Chat />
+							}
+						]
 					}
 				]
+			},
+			{
+				path: '/auth',
+				element: <Auth />,
+				children: [
+					{ index: true, element: <Navigate to='login' replace /> },
+					{ path: 'login', element: <Auth /> },
+					{ path: 'register', element: <Auth /> }
+				]
+			},
+			{
+				path: '*',
+				element: <NotFound />
 			}
 		]
-	},
-	{
-		path: '/auth',
-		element: <Auth />,
-		children: [
-			{ index: true, element: <Navigate to='login' replace /> },
-			{ path: 'login', element: <Auth /> },
-			{ path: 'register', element: <Auth /> }
-		]
-	},
-	{
-		path: '*',
-		element: <NotFound />
 	}
 ])

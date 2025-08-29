@@ -9,7 +9,6 @@ export const useSocketChat = () => {
 	const dispatch = useDispatch()
 	const currentRoomRef = useRef(null)
 
-	// Обработчик новых сообщений
 	const handleNewMessage = useCallback(
 		message => {
 			console.log('[socket] newMessage received:', message)
@@ -18,7 +17,6 @@ export const useSocketChat = () => {
 		[dispatch]
 	)
 
-	// Подписка на события сокета
 	useEffect(() => {
 		if (!socket) return
 
@@ -33,7 +31,6 @@ export const useSocketChat = () => {
 		}
 	}, [socket, handleNewMessage])
 
-	// Выход из чата (вынесен отдельно чтобы избежать циклических зависимостей)
 	const leaveChat = useCallback(
 		chatId => {
 			if (!chatId || !currentUser || !socket) return
@@ -52,14 +49,12 @@ export const useSocketChat = () => {
 		[socket, currentUser]
 	)
 
-	// Переподключение при восстановлении соединения
 	useEffect(() => {
 		if (!socket) return
 
 		const handleReconnect = () => {
 			console.log('[socket] reconnected')
 			if (currentRoomRef.current && currentUser) {
-				// Присоединяемся к текущему чату при переподключении
 				console.log('[socket] re-joining room:', currentRoomRef.current)
 				socket.emit('joinRoom', {
 					chatId: currentRoomRef.current,
@@ -75,17 +70,14 @@ export const useSocketChat = () => {
 		}
 	}, [socket, currentUser])
 
-	// Присоединение к чату
 	const joinChat = useCallback(
 		chatId => {
 			if (!chatId || !currentUser) return
 
-			// Выходим из предыдущего чата если он отличается
 			if (currentRoomRef.current && currentRoomRef.current !== chatId) {
 				leaveChat(currentRoomRef.current)
 			}
 
-			// Присоединяемся к новому чату
 			if (socket) {
 				console.log('[socket] joining room:', chatId)
 				socket.emit('joinRoom', {
@@ -101,7 +93,6 @@ export const useSocketChat = () => {
 		[socket, currentUser, leaveChat]
 	)
 
-	// Отправка сообщения
 	const sendMessage = useCallback(
 		messageText => {
 			if (!messageText?.trim() || !currentUser || !socket) return
@@ -122,7 +113,6 @@ export const useSocketChat = () => {
 		[socket, currentUser]
 	)
 
-	// Автоматический выход при размонтировании
 	useEffect(() => {
 		return () => {
 			if (currentRoomRef.current) {

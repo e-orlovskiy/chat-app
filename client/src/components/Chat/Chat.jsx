@@ -8,13 +8,14 @@ import {
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getHasRefreshFailed } from '../../api/axios'
+import { getHasRefreshFailed, resetRefreshFlag } from '../../api/axios'
 import {
 	getChatMessages,
 	resetMessages,
 	setCurrentChat
 } from '../../features/chat/chatSlice'
 import { useSocketChat } from '../../hooks/useSocketChats'
+import { groupMessages } from '../../utils/groupMessages'
 import ChatHeader from '../ChatHeader/ChatHeader'
 import ChatInput from '../ChatInput/ChatInput'
 import MessageBlock from '../MessageBlock/MessageBlock'
@@ -63,12 +64,16 @@ function Chat() {
 	const handleSendMessage = useCallback(
 		text => {
 			if (!text || !text.trim() || !currentUser) return
-
 			sendMessage(text)
 			setMessageText('')
 		},
 		[currentUser, sendMessage]
 	)
+
+	useEffect(() => {
+		setInitialLoad(true)
+		resetRefreshFlag()
+	}, [chatId])
 
 	useEffect(() => {
 		if (!chatId) {
@@ -123,9 +128,7 @@ function Chat() {
 					!messagesLoading &&
 					!isPaginatingRef.current
 				) {
-					if (getHasRefreshFailed()) {
-						return
-					}
+					if (getHasRefreshFailed()) return
 
 					isPaginatingRef.current = true
 					const oldScrollHeight = container.scrollHeight
@@ -175,16 +178,36 @@ function Chat() {
 						>
 							<div style={{ minHeight: '1px' }} ref={messagesTopRef} />
 
-							{chatMessages.map(message => (
-								<MessageBlock
-									key={message._id}
-									messageText={message.text}
-									author={message.author?.username || 'unknown'}
-									createdAt={message.createdAt}
-									updatedAt={message.updatedAt}
-									own={message.author?._id === currentUser._id}
-								/>
-							))}
+							{groupMessages(chatMessages, { thresholdMs: 5 * 60 * 1000 }).map(
+								dateGroup => (
+									<div key={dateGroup.dateKey} className={styles['date-group']}>
+										<div className={styles['date-group__header']}>
+											{dateGroup.dateLabel}
+										</div>
+
+										{dateGroup.userGroups.map(g =>
+											g.messages.map((message, index) => {
+												const isLastMessage = index === g.messages.length - 1
+												const isFirstMessage = index === 0
+
+												return (
+													<MessageBlock
+														key={message._id}
+														messageText={message.text}
+														author={message.author?.username || 'unknown'}
+														createdAt={message.createdAt}
+														updatedAt={message.updatedAt}
+														own={message.author?._id === currentUser._id}
+														isLastMessage={isLastMessage}
+														isFirstMessage={isFirstMessage}
+														// если нужно, можно передать весь объект group (g) для дополнительных стилей
+													/>
+												)
+											})
+										)}
+									</div>
+								)
+							)}
 
 							<div ref={messagesEndRef} />
 						</div>

@@ -1,6 +1,15 @@
 import bcrypt from 'bcryptjs'
 import mongoose from 'mongoose'
 
+const avatarSchema = mongoose.Schema(
+	{
+		publicId: String,
+		url: String,
+		uploadedAt: Date
+	},
+	{ _id: false }
+)
+
 const userSchema = mongoose.Schema(
 	{
 		username: {
@@ -36,7 +45,8 @@ const userSchema = mongoose.Schema(
 				type: mongoose.Schema.Types.ObjectId,
 				ref: 'Chat'
 			}
-		]
+		],
+		avatar: { type: avatarSchema, default: null }
 	},
 	{
 		timestamps: true,
@@ -61,7 +71,10 @@ userSchema.pre('save', async function (next) {
 })
 
 // Проверка пароля
-userSchema.methods.correctPassword = async (candidatePassword, userPassword) => {
+userSchema.methods.correctPassword = async (
+	candidatePassword,
+	userPassword
+) => {
 	return await bcrypt.compare(candidatePassword, userPassword)
 }
 

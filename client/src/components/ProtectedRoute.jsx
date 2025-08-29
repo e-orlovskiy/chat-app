@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Navigate, Outlet } from 'react-router-dom'
+import { getHasRefreshFailed, resetRefreshFlag } from '../api/axios'
 import { checkAuth } from '../features/auth/authSlice'
 
 const ProtectedRoute = () => {
@@ -8,7 +9,7 @@ const ProtectedRoute = () => {
 	const { user, status } = useSelector(state => state.auth)
 
 	useEffect(() => {
-		if (status === 'idle') dispatch(checkAuth())
+		if (status === 'idle' && !getHasRefreshFailed()) dispatch(checkAuth())
 	}, [dispatch, status])
 
 	if (status === 'loading' && !user) {
@@ -21,6 +22,7 @@ const ProtectedRoute = () => {
 		return <Navigate to='/auth/login' replace />
 	}
 	if (status === 'succeeded' && user) {
+		resetRefreshFlag()
 		return <Outlet />
 	}
 }

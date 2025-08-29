@@ -1,64 +1,39 @@
 import cn from 'classnames'
-import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { clearError, loginUser, setError } from '../../features/auth/authSlice'
+import { useDispatch } from 'react-redux'
+import { NavLink } from 'react-router-dom'
+import { loginUser, setError } from '../../features/auth/authSlice'
 import { validateLoginForm } from '../../utils/authValidators'
 import Button from '../Button/Button'
-import Modal from '../Modal/Modal'
 import TextInput from '../TextInput/TextInput'
 import styles from './Login.module.css'
 
 const Login = ({ formData, setFormData }) => {
 	const { email, password } = formData
-	const navigate = useNavigate()
 	const dispatch = useDispatch()
-	const { error } = useSelector(state => state.auth)
-	const [inactiveBtn, setInactiveBtn] = useState(false)
-	const [modalVisibility, setModalVisibility] = useState(false)
-	const [modalContent, setModalContent] = useState({ message: '', type: '' })
-
-	useEffect(() => {
-		if (error) showModal(error, 'error')
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [error])
 
 	const handleChange = e => {
 		const { name, value } = e.target
 		setFormData(prev => ({ ...prev, [name]: value }))
 	}
 
-	const showModal = (message, type) => {
-		setInactiveBtn(true)
-		setModalContent({ message, type })
-		setModalVisibility(true)
-
-		setTimeout(() => {
-			dispatch(clearError())
-			setInactiveBtn(false)
-			setModalVisibility(false)
-		}, 3000)
-	}
-
 	const handleSubmit = async e => {
 		e.preventDefault()
-
-		if (error) return
-
 		const validationError = validateLoginForm({ email, password })
-		if (validationError && Object.values(validationError).some(error => error)) {
-			const errors = Object.values(validationError)
-			dispatch(setError(errors))
+
+		if (
+			validationError &&
+			Object.values(validationError).some(error => error)
+		) {
+			dispatch(
+				setError({
+					type: 'validation',
+					message: Object.values(validationError)
+				})
+			)
 			return
 		}
 
-		try {
-			await dispatch(loginUser({ email, password })).unwrap()
-			showModal('Login successful', 'success')
-			setTimeout(() => navigate('/'), 3000)
-		} catch (err) {
-			console.log(err)
-		}
+		await dispatch(loginUser({ email, password })).unwrap()
 	}
 
 	return (
@@ -78,7 +53,7 @@ const Login = ({ formData, setFormData }) => {
 					type='password'
 					placeholder='password'
 				/>
-				<Button inactive={inactiveBtn} type='submit'>
+				<Button inactive={false} type='submit'>
 					sign in
 				</Button>
 				<p className={cn(styles['message'])}>
@@ -88,10 +63,6 @@ const Login = ({ formData, setFormData }) => {
 					</NavLink>
 				</p>
 			</form>
-
-			{modalVisibility && (
-				<Modal message={modalContent.message} type={modalContent.type} />
-			)}
 		</>
 	)
 }

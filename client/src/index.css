@@ -16,15 +16,17 @@
 	--input-text-light-color: #b5b9c8;
 	--input-text-color: #0b1433;
 	--chat-bg-color: #edf0f6;
-	--my-message-bg-color: #cfd3e4;
+	--my-message-bg-color: #cdd0df;
 	--blue-color: #6cb3ff;
 	--red-color: #ff7a7a;
+	--my-message-date-color: #687583;
 	/* шрифты */
 	--primary-font: 'Ubuntu Sans', sans-serif;
 	/* размеры шрифта */
+	--font-size-xxs: 10px;
 	--font-size-xs: 12px;
 	--font-size-s: 14px;
-	--font-size-m: 18px;
+	--font-size-m: 16px;
 	--font-size-pre-l: 24px;
 	--font-size-l: 32px;
 	--font-size-xl: 42px;
@@ -46,6 +48,9 @@
 		rgba(0, 0, 0, 0.23) 0px 3px 6px;
 	--input-box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px,
 		rgb(209, 213, 219) 0px 0px 0px 1px inset;
+	--group-element-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 1px,
+		rgba(6, 24, 44, 0.65) 0px 2px 3px -1px,
+		rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
 }
 
 * {

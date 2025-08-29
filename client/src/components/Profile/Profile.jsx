@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { useSocket } from '../../context/socket/useSocket'
 import { useTheme } from '../../context/theme/useTheme'
 import { logoutUser } from '../../features/auth/authSlice'
+import UserAvatar from '../UserAvatar/UserAvatar'
 import styles from './Profile.module.css'
 
 const statusOptions = [
@@ -86,15 +87,7 @@ const Profile = () => {
 			</div>
 
 			{/* User profile */}
-			<div className={cn(styles['profile-avatar-container'])}>
-				<div className={cn(styles['profile-avatar'])}>
-					<span>{user.username[0].toUpperCase()}</span>
-					<div
-						className={cn(styles['status-indicator'])}
-						style={{ backgroundColor: currentStatus.color }}
-					/>
-				</div>
-			</div>
+			<UserAvatar user={user} currentStatus={currentStatus} />
 
 			{/* User info */}
 			<div className={cn(styles['profile-info'])}>

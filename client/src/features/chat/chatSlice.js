@@ -13,8 +13,8 @@ export const getUserChats = createAsyncThunk(
 	async ({ page, limit }, { rejectWithValue }) => {
 		try {
 			return await getUserChatsAPI(page, limit)
-		} catch (err) {
-			return rejectWithValue(normalizeError(err))
+		} catch (error) {
+			return rejectWithValue(normalizeError(error))
 		}
 	}
 )
@@ -59,6 +59,7 @@ const chatSlice = createSlice({
 		messages: [],
 		status: 'idle',
 		error: null,
+		notification: null,
 		currentPage: 1,
 		messagesPage: 0,
 		hasMore: true,
@@ -71,26 +72,23 @@ const chatSlice = createSlice({
 	reducers: {
 		addMessage: (state, action) => {
 			const msg = action.payload
-			state.messages.push(msg)
+			if (!msg || !msg._id) {
+				console.error('Invalid message format:', msg)
+				return
+			}
 
-			// const msg = action.payload
-			// if (!msg || !msg._id) {
-			// 	console.error('Invalid message format:', msg)
-			// 	return
-			// }
+			const exists = state.messages.some(m => m._id === msg._id)
+			if (!exists) {
+				const index = state.messages.findIndex(
+					m => new Date(m.createdAt) > new Date(msg.createdAt)
+				)
 
-			// const exists = state.messages.some(m => m._id === msg._id)
-			// if (!exists) {
-			// 	const index = state.messages.findIndex(
-			// 		m => new Date(m.createdAt) > new Date(msg.createdAt)
-			// 	)
-
-			// 	if (index === -1) {
-			// 		state.messages.push(msg)
-			// 	} else {
-			// 		state.messages.splice(index, 0, msg)
-			// 	}
-			// }
+				if (index === -1) {
+					state.messages.push(msg)
+				} else {
+					state.messages.splice(index, 0, msg)
+				}
+			}
 		},
 
 		resetMessages: state => {
@@ -148,11 +146,21 @@ const chatSlice = createSlice({
 			state.hasMore = true
 		},
 
+		clearError: state => {
+			state.error = null
+		},
+
+		clearNotification: state => {
+			state.notification = null
+		},
+
 		fullReset: state => {
 			state.chats = []
 			state.currentPage = 1
 			state.hasMore = true
 			state.currentChat = null
+			state.error = null
+			state.notification = null
 			state.messages = []
 			state.messagesPage = 0
 			state.messagesHasMore = true
@@ -238,6 +246,8 @@ export const {
 	updateUserStatus,
 	setUserTyping,
 	resetChatState,
+	clearError,
+	clearNotification,
 	fullReset
 } = chatSlice.actions
 export default chatSlice.reducer

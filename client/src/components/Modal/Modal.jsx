@@ -1,23 +1,25 @@
 import cn from 'classnames'
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import styles from './Modal.module.css'
-function Modal({ message, type }) {
+
+function Modal({ type, message }) {
 	const [visibleMessages, setVisibleMessages] = useState([])
+
+	const modalRoot = document.getElementById('modal-root')
 
 	useEffect(() => {
 		if (message) {
-			if (Array.isArray(message)) {
-				setVisibleMessages(message)
-				return
-			}
-			const messages = message.split('\n').filter(msg => msg && msg.trim)
+			const messages = Array.isArray(message)
+				? message
+				: message.split('\n').filter(msg => msg && msg.trim)
 			setVisibleMessages(messages)
-		} else {
-			setVisibleMessages([])
 		}
 	}, [message])
 
-	return (
+	if (!modalRoot) return null
+
+	return createPortal(
 		<div className={cn(styles['modal'], styles[type])}>
 			<h3 className={cn(styles['title'])}>
 				{type === 'error' ? 'Error!' : 'Success!'}
@@ -29,7 +31,8 @@ function Modal({ message, type }) {
 					</p>
 				))}
 			</div>
-		</div>
+		</div>,
+		modalRoot
 	)
 }
 

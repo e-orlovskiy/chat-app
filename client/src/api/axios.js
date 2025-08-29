@@ -44,6 +44,7 @@ api.interceptors.response.use(
 			try {
 				await api.post('/auth/refresh')
 				isRefreshing = false
+				hasRefreshFailed = false
 				processQueue()
 				return api(originalRequest)
 			} catch (refreshError) {

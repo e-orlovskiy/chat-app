@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { normalizeError } from '../../utils/normalizeError'
 import {
 	checkAuthAPI,
 	loginUserAPI,
@@ -8,32 +9,56 @@ import {
 
 export const loginUser = createAsyncThunk(
 	'auth/login',
-	async ({ email, password }) => {
-		return await loginUserAPI(email, password)
+	async ({ email, password }, { rejectWithValue }) => {
+		try {
+			return await loginUserAPI(email, password)
+		} catch (error) {
+			console.log(error)
+			return rejectWithValue(normalizeError(error))
+		}
 	}
 )
 
 export const registerUser = createAsyncThunk(
 	'auth/register',
-	async ({ username, email, password }) => {
-		return await registerUserAPI(username, email, password)
+	async ({ username, email, password }, { rejectWithValue }) => {
+		try {
+			return await registerUserAPI(username, email, password)
+		} catch (error) {
+			return rejectWithValue(normalizeError(error))
+		}
 	}
 )
 
-export const checkAuth = createAsyncThunk('auth/checkAuth', async () => {
-	return await checkAuthAPI()
-})
+export const checkAuth = createAsyncThunk(
+	'auth/checkAuth',
+	async (_, { rejectWithValue }) => {
+		try {
+			return await checkAuthAPI()
+		} catch (error) {
+			return rejectWithValue(normalizeError(error))
+		}
+	}
+)
 
-export const logoutUser = createAsyncThunk('auth/logout', async () => {
-	return await logoutAPI()
-})
+export const logoutUser = createAsyncThunk(
+	'auth/logout',
+	async (_, { rejectWithValue }) => {
+		try {
+			return await logoutAPI()
+		} catch (error) {
+			return rejectWithValue(normalizeError(error))
+		}
+	}
+)
 
 const authSlice = createSlice({
 	name: 'auth',
 	initialState: {
 		user: null,
 		status: 'idle',
-		error: null
+		error: null,
+		notification: null
 	},
 	reducers: {
 		setUser: (state, action) => {
@@ -42,13 +67,20 @@ const authSlice = createSlice({
 		setError: (state, action) => {
 			state.error = action.payload
 		},
+		setNotification: (state, action) => {
+			state.notification = action.payload
+		},
 		clearError: state => {
 			state.error = null
+		},
+		clearNotification: state => {
+			state.notification = null
 		},
 		fullReset: state => {
 			state.user = null
 			state.status = 'idle'
 			state.error = null
+			state.notification = null
 		}
 	},
 	extraReducers: builder => {
@@ -57,21 +89,31 @@ const authSlice = createSlice({
 				state.user = action.payload
 				state.status = 'succeeded'
 				state.error = null
+				state.notification = {
+					message: 'Login successful',
+					type: 'success'
+				}
 			})
 			.addCase(loginUser.rejected, (state, action) => {
-				state.error = action.error.message
+				state.error = action.payload
 				state.status = 'failed'
 				state.user = null
+				state.notification = null
 			})
 			.addCase(registerUser.fulfilled, (state, action) => {
 				state.user = action.payload
 				state.status = 'succeeded'
 				state.error = null
+				state.notification = {
+					message: 'Registration successful',
+					type: 'success'
+				}
 			})
 			.addCase(registerUser.rejected, (state, action) => {
-				state.error = action.error.message
+				state.error = action.payload
 				state.status = 'failed'
 				state.user = null
+				state.notification = null
 			})
 			.addCase(checkAuth.pending, state => {
 				state.status = 'loading'
@@ -80,11 +122,13 @@ const authSlice = createSlice({
 				state.user = action.payload
 				state.status = 'succeeded'
 				state.error = null
+				state.notification = null
 			})
 			.addCase(checkAuth.rejected, (state, action) => {
-				state.error = action.error.message
+				state.error = action.payload
 				state.status = 'failed'
 				state.user = null
+				state.notification = null
 			})
 			.addCase(logoutUser.pending, state => {
 				state.status = 'loading'
@@ -93,14 +137,23 @@ const authSlice = createSlice({
 				state.user = null
 				state.status = 'idle'
 				state.error = null
+				state.notification = null
 			})
 			.addCase(logoutUser.rejected, (state, action) => {
-				state.error = action.error.message
+				state.error = action.payload
 				state.status = 'failed'
+				state.notification = null
 			})
 	}
 })
 
-export const { logout, setUser, clearError, setError, fullReset } =
-	authSlice.actions
+export const {
+	logout,
+	setUser,
+	clearError,
+	setError,
+	fullReset,
+	setNotification,
+	clearNotification
+} = authSlice.actions
 export default authSlice.reducer
