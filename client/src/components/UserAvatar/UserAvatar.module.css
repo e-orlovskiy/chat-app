@@ -19,6 +19,7 @@
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
+	border-radius: 50%;
 }
 
 .user-avatar > span {
@@ -26,12 +27,54 @@
 	color: var(--text-color);
 }
 
+.user-avatar:hover .upload-avatar-button {
+	opacity: 1;
+}
+
 .status-indicator {
 	position: absolute;
 	bottom: 7px;
-	right: 7px;
+	right: 0px;
 	border: 2px solid var(--primary-color);
-	width: 18px;
-	height: 18px;
+	width: 26px;
+	height: 26px;
 	border-radius: 50%;
+}
+
+.upload-avatar-button {
+	opacity: 0;
+	position: absolute;
+	bottom: 35px;
+	right: -12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 2px solid var(--primary-color);
+	background: var(--blue-color);
+	width: 26px;
+	height: 26px;
+	border-radius: 50%;
+	font-size: var(--font-size-m);
+	color: var(--text-color);
+	outline: none;
+	cursor: pointer;
+	transition: opacity 0.3s ease-in-out;
+}
+
+.upload-avatar-button.loading {
+	opacity: 1;
+	cursor: not-allowed;
+}
+
+.upload-avatar-button.loading .spinner {
+	animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }

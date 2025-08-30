@@ -1,7 +1,10 @@
 import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
+import { ImSpinner3 } from 'react-icons/im'
+import { MdOutlineFileUpload } from 'react-icons/md'
 import { useDispatch, useSelector } from 'react-redux'
-import { uploadUserAvatar } from '../../features/users/usersSlice'
+import { setError, uploadUserAvatar } from '../../features/auth/authSlice'
+import { validateImage } from '../../utils/uploadImageValidators'
 import styles from './UserAvatar.module.css'
 
 function UserAvatar({ user = {}, currentStatus = {} }) {
@@ -10,11 +13,8 @@ function UserAvatar({ user = {}, currentStatus = {} }) {
 
 	const [localPreview, setLocalPreview] = useState(null)
 
-	const uploadProgress = useSelector(
-		state => state.users.uploadUserAvatarProgress
-	)
-	const uploadStatus = useSelector(state => state.users.uploadUserAvatarStatus)
-	const avatarUrl = useSelector(state => state.users?.userAvatar?.url)
+	const uploadStatus = useSelector(state => state.auth.uploadUserAvatarStatus)
+	const avatarUrl = useSelector(state => state.auth.user?.avatar?.url)
 
 	useEffect(() => {
 		if (uploadStatus === 'succeeded') {
@@ -23,11 +23,7 @@ function UserAvatar({ user = {}, currentStatus = {} }) {
 				localPreview.startsWith &&
 				localPreview.startsWith('blob:')
 			) {
-				try {
-					URL.revokeObjectURL(localPreview)
-				} catch (e) {
-					/* ignore */
-				}
+				URL.revokeObjectURL(localPreview)
 			}
 			setLocalPreview(null)
 		}
@@ -41,11 +37,7 @@ function UserAvatar({ user = {}, currentStatus = {} }) {
 				localPreview.startsWith &&
 				localPreview.startsWith('blob:')
 			) {
-				try {
-					URL.revokeObjectURL(localPreview)
-				} catch (e) {
-					/* ignore */
-				}
+				URL.revokeObjectURL(localPreview)
 			}
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,15 +51,12 @@ function UserAvatar({ user = {}, currentStatus = {} }) {
 		const f = e.target.files?.[0]
 		if (!f) return
 
-		const allowed = ['image/png', 'image/jpeg', 'image/webp']
-		if (!allowed.includes(f.type)) {
-			alert('Разрешены только PNG/JPEG/WebP')
-			e.target.value = null
-			return
-		}
-		const maxSize = 5 * 1024 * 1024
-		if (f.size > maxSize) {
-			alert('Максимальный размер 5MB')
+		const validationError = validateImage(f)
+		if (
+			validationError &&
+			Object.values(validationError).some(error => error)
+		) {
+			dispatch(setError({ type: 'validation', message: validationError }))
 			e.target.value = null
 			return
 		}
@@ -76,7 +65,6 @@ function UserAvatar({ user = {}, currentStatus = {} }) {
 		setLocalPreview(obj)
 
 		dispatch(uploadUserAvatar(f))
-
 		e.target.value = null
 	}
 
@@ -99,47 +87,30 @@ function UserAvatar({ user = {}, currentStatus = {} }) {
 					className={cn(styles['status-indicator'])}
 					style={{ backgroundColor: currentStatus?.color || 'gray' }}
 				/>
-			</div>
-
-			<div style={{ marginTop: 8 }}>
-				<input
-					ref={inputRef}
-					type='file'
-					accept='image/png,image/jpeg,image/webp'
-					style={{ display: 'none' }}
-					onChange={handleFileChange}
-				/>
-				<button
-					type='button'
-					onClick={handleOpenPicker}
-					disabled={uploadStatus === 'loading'}
-				>
-					{uploadStatus === 'loading' ? 'Загрузка...' : 'Загрузить аватар'}
-				</button>
-			</div>
-
-			{uploadProgress > 0 && uploadProgress < 100 && (
-				<div style={{ marginTop: 8, width: 160 }}>
-					<div
-						style={{
-							height: 8,
-							background: '#eee',
-							borderRadius: 4,
-							overflow: 'hidden'
-						}}
+				<div>
+					<input
+						ref={inputRef}
+						type='file'
+						accept='image/png,image/jpeg,image/webp'
+						style={{ display: 'none' }}
+						onChange={handleFileChange}
+					/>
+					<button
+						className={cn(styles['upload-avatar-button'], {
+							[styles['loading']]: uploadStatus === 'loading'
+						})}
+						type='button'
+						onClick={handleOpenPicker}
+						disabled={uploadStatus === 'loading'}
 					>
-						<div
-							style={{
-								width: `${uploadProgress}%`,
-								height: '100%',
-								background: '#4caf50',
-								transition: 'width 200ms linear'
-							}}
-						/>
-					</div>
-					<div style={{ fontSize: 12, marginTop: 4 }}>{uploadProgress}%</div>
+						{uploadStatus === 'loading' ? (
+							<ImSpinner3 className={cn(styles['spinner'])} />
+						) : (
+							<MdOutlineFileUpload />
+						)}
+					</button>
 				</div>
-			)}
+			</div>
 		</div>
 	)
 }

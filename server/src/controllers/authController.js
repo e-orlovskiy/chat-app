@@ -38,7 +38,8 @@ export const register = async (req, res, next) => {
 		return res.status(201).json({
 			_id: user._id,
 			username: user.username,
-			email: user.email
+			email: user.email,
+			avatar: user.avatar || null
 		})
 	} catch (err) {
 		next(err)
@@ -76,7 +77,8 @@ export const login = async (req, res, next) => {
 		res.json({
 			_id: user._id,
 			username: user.username,
-			email: user.email
+			email: user.email,
+			avatar: user.avatar
 		})
 	} catch (err) {
 		next(err)
@@ -92,7 +94,8 @@ export const checkAuth = async (req, res, next) => {
 		res.json({
 			_id: req.user._id,
 			username: req.user.username,
-			email: req.user.email
+			email: req.user.email,
+			avatar: req.user.avatar
 		})
 	} catch (err) {
 		next(err)
@@ -145,7 +148,8 @@ export const refreshToken = async (req, res, next) => {
 		res.json({
 			_id: user._id,
 			username: user.username,
-			email: user.email
+			email: user.email,
+			avatar: user.avatar
 		})
 	} catch (error) {
 		next(error)

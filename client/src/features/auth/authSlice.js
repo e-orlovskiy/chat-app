@@ -4,7 +4,8 @@ import {
 	checkAuthAPI,
 	loginUserAPI,
 	logoutAPI,
-	registerUserAPI
+	registerUserAPI,
+	uploadUserAvatarAPI
 } from './authAPI'
 
 export const loginUser = createAsyncThunk(
@@ -52,13 +53,25 @@ export const logoutUser = createAsyncThunk(
 	}
 )
 
+export const uploadUserAvatar = createAsyncThunk(
+	'users/uploadUserAvatar',
+	async (file, { rejectWithValue }) => {
+		try {
+			return await uploadUserAvatarAPI(file)
+		} catch (error) {
+			return rejectWithValue(normalizeError(error))
+		}
+	}
+)
+
 const authSlice = createSlice({
 	name: 'auth',
 	initialState: {
 		user: null,
 		status: 'idle',
 		error: null,
-		notification: null
+		notification: null,
+		uploadUserAvatarStatus: 'idle'
 	},
 	reducers: {
 		setUser: (state, action) => {
@@ -143,6 +156,18 @@ const authSlice = createSlice({
 				state.error = action.payload
 				state.status = 'failed'
 				state.notification = null
+			})
+			.addCase(uploadUserAvatar.pending, state => {
+				state.uploadUserAvatarStatus = 'loading'
+			})
+			.addCase(uploadUserAvatar.fulfilled, (state, action) => {
+				const { publicId, url, uploadedAt } = action.payload
+				state.user = { ...state.user, avatar: { publicId, url, uploadedAt } }
+				state.uploadUserAvatarStatus = 'succeeded'
+			})
+			.addCase(uploadUserAvatar.rejected, (state, action) => {
+				state.uploadUserAvatarStatus = 'failed'
+				state.error = action.payload
 			})
 	}
 })
