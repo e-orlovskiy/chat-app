@@ -1,7 +1,9 @@
 import { memo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import defaultAvatar from '../../assets/default-avatar.avif'
 import { createOrGetChat } from '../../features/chat/chatSlice'
+import { formatTime } from '../../utils/formatTime'
 import styles from './ChatListItem.module.css'
 
 function ChatListItem({
@@ -47,7 +49,8 @@ function ChatListItem({
 		? {
 				name: userData?.username || 'Unknown',
 				message: 'Start a conversation',
-				time: ''
+				time: '',
+				avatar: userData?.avatar
 		  }
 		: {
 				name:
@@ -56,9 +59,19 @@ function ChatListItem({
 						?.members.find(m => m._id !== currentUser?._id)?.username ||
 					'Unknown',
 				message:
-					chats.find(c => c._id === chatId)?.lastMessage?.text ||
+					(chats.find(c => c._id === chatId)?.lastMessage?.text.length > 20
+						? chats
+								.find(c => c._id === chatId)
+								?.lastMessage?.text.slice(0, 25) + '...'
+						: chats.find(c => c._id === chatId)?.lastMessage?.text) ||
 					'No messages yet',
-				time: chats.find(c => c._id === chatId)?.lastMessage?.createdAt
+				time: formatTime(
+					chats.find(c => c._id === chatId)?.lastMessage?.createdAt,
+					true
+				),
+				avatar: chats
+					.find(c => c._id === chatId)
+					?.members.find(m => m._id !== currentUser?._id)?.avatar
 		  }
 
 	return (
@@ -68,7 +81,15 @@ function ChatListItem({
 			style={{ opacity: isLoading ? 0.5 : 1 }}
 		>
 			<div className={styles['chats-user__user-and-text']}>
-				<div className={styles['chats-user__avatar']} />
+				<div className={styles['chats-user__avatar-container']}>
+					<img
+						className={styles['chats-user__avatar']}
+						src={
+							displayData.avatar?.url ? displayData.avatar?.url : defaultAvatar
+						}
+						alt={displayData.name}
+					/>
+				</div>
 				<div className={styles['chats-user__text']}>
 					<p className={styles['chats-user__username']}>{displayData.name}</p>
 					<p className={styles['chats-user__last-message']}>
@@ -77,7 +98,10 @@ function ChatListItem({
 				</div>
 			</div>
 			{displayData.time && (
-				<p className={styles['chats-user__date']}>{displayData.time}</p>
+				<p className={styles['chats-user__date']}>
+					<p>{displayData.time[0]}</p>
+					<p>at {displayData.time[1]}</p>
+				</p>
 			)}
 		</li>
 	)

@@ -60,6 +60,7 @@ export const uploadUserAvatar = async (req, res) => {
 			return res.status(404).json({ message: 'User not found' })
 		}
 
+		user.avatar = result
 		await user.save()
 
 		return res.status(200).json({
@@ -96,7 +97,7 @@ export const searchUsers = async (req, res, next) => {
 
 		const [users, totalCount] = await Promise.all([
 			User.find(query)
-				.select('_id username email')
+				.select('_id username email avatar')
 				.sort({ username: 1 })
 				.skip(skip)
 				.limit(limitNum),

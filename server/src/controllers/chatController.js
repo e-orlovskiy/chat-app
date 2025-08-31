@@ -9,20 +9,80 @@ export const getUserChats = async (req, res, next) => {
 		const limit = Number(req.query.limit) || 10
 		const skip = (page - 1) * limit
 
+		// Используем агрегацию для получения чатов с последним сообщением
+		const aggregation = await Chat.aggregate([
+			{
+				$match: {
+					members: { $in: [currentUserId] }
+				}
+			},
+			{
+				$sort: { updatedAt: -1 }
+			},
+			{
+				$skip: skip
+			},
+			{
+				$limit: limit
+			},
+			{
+				$lookup: {
+					from: 'messages',
+					let: { chatId: '$_id' },
+					pipeline: [
+						{
+							$match: {
+								$expr: { $eq: ['$chat', '$$chatId'] }
+							}
+						},
+						{
+							$sort: { createdAt: -1 }
+						},
+						{
+							$limit: 1
+						},
+						{
+							$project: {
+								text: 1,
+								author: 1,
+								date: 1,
+								createdAt: 1
+							}
+						}
+					],
+					as: 'lastMessage'
+				}
+			},
+			{
+				$unwind: {
+					path: '$lastMessage',
+					preserveNullAndEmptyArrays: true
+				}
+			},
+			{
+				$lookup: {
+					from: 'users',
+					localField: 'members',
+					foreignField: '_id',
+					as: 'members'
+				}
+			},
+			{
+				$project: {
+					'members.password': 0,
+					'members.email': 0
+				}
+			}
+		])
+
 		const totalCount = await Chat.countDocuments({
 			members: { $in: currentUserId }
 		})
 
-		const chats = await Chat.find({ members: { $in: currentUserId } })
-			.skip(skip)
-			.limit(limit)
-			.populate('members', '_id username email')
-			.sort({ updatedAt: -1 })
-
-		const hasMore = skip + chats.length < totalCount
+		const hasMore = skip + aggregation.length < totalCount
 
 		res.json({
-			data: chats,
+			data: aggregation,
 			page,
 			hasMore,
 			totalCount

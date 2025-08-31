@@ -91,6 +91,7 @@ export const checkAuth = async (req, res, next) => {
 			res.status(401)
 			throw new Error('Вы не авторизованы')
 		}
+
 		res.json({
 			_id: req.user._id,
 			username: req.user.username,

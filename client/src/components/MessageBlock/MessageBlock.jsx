@@ -1,17 +1,18 @@
 import cn from 'classnames'
-import { formatDate } from '../../utils/formatTime'
+import { formatTime } from '../../utils/formatTime'
 import styles from './MessageBlock.module.css'
 
 function MessageBlock({
 	messageText,
 	author,
+	avatar,
 	createdAt,
 	updatedAt,
 	own,
 	isLastMessage = false
 }) {
-	const formattedCreatedAt = formatDate(createdAt)
-	const formattedUpdatedAt = formatDate(updatedAt)
+	const formattedCreatedAt = formatTime(createdAt)
+	const formattedUpdatedAt = formatTime(updatedAt)
 	const authorLabel = own ? 'You' : author || 'Unknown'
 
 	return (
@@ -27,8 +28,8 @@ function MessageBlock({
 			{isLastMessage ? (
 				<img
 					className={cn(styles['message__avatar'])}
-					src='https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWFufGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60'
-					alt=''
+					src={avatar}
+					alt={author?.name}
 				/>
 			) : (
 				<div className={cn(styles['message__temp-blank'])} />

@@ -9,6 +9,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getHasRefreshFailed, resetRefreshFlag } from '../../api/axios'
+import defaultAvatar from '../../assets/default-avatar.avif'
 import {
 	getChatMessages,
 	resetMessages,
@@ -195,12 +196,14 @@ function Chat() {
 														key={message._id}
 														messageText={message.text}
 														author={message.author?.username || 'unknown'}
+														avatar={
+															message.author?.avatar?.url || defaultAvatar
+														}
 														createdAt={message.createdAt}
 														updatedAt={message.updatedAt}
 														own={message.author?._id === currentUser._id}
 														isLastMessage={isLastMessage}
 														isFirstMessage={isFirstMessage}
-														// если нужно, можно передать весь объект group (g) для дополнительных стилей
 													/>
 												)
 											})
