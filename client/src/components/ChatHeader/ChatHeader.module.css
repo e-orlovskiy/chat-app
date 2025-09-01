@@ -18,12 +18,12 @@
 	padding: var(--offset-xs) var(--offset-m);
 	border-radius: var(--border-radius-xl);
 	cursor: pointer;
-	color: var(--input-text-light-color);
+	color: var(--color-text-secondary);
 }
 
 .chat-window__actions > li.active {
-	background: var(--lightgreen-color);
-	color: var(--green-color);
+	background-color: var(--color-accent-secondary);
+	color: var(--color-accent-primary);
 }
 
 .chat-window__title {
@@ -33,7 +33,7 @@
 .chat-window__underline {
 	width: 100%;
 	height: 1.5px;
-	background: var(--my-message-bg-color);
+	background: var(--color-bg-quaternary);
 }
 
 .participants {

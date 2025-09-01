@@ -12,16 +12,15 @@
 	position: absolute;
 	right: 0;
 	top: 100%;
-	background: var(--input-color);
+	background-color: var(--color-bg-secondary);
 	padding: var(--offset-xs);
 	border-radius: var(--border-radius-s);
 	opacity: 0;
 	visibility: hidden;
 	transform: translateY(-10px);
 	transition: all 0.2s ease-in-out;
-	box-shadow: var(--input-box-shadow);
-	z-index: 10;
 	list-style: none;
+	z-index: 10;
 }
 
 .dropdown.is-open {
@@ -32,12 +31,11 @@
 
 .dropdown__icon {
 	box-sizing: content-box;
-	font-size: var(--font-size-m);
-	color: var(--text-color);
+	font-size: var(--font-size-pre-m);
+	color: var(--color-text-primary);
 	padding: var(--offset-xxs);
 }
 
-/* Стили для настроек */
 .settings-container {
 	position: absolute;
 	display: flex;
@@ -49,17 +47,17 @@
 
 .settings-icon {
 	font-size: var(--font-size-pre-l);
-	color: var(--input-text-light-color);
+	color: var(--color-text-tertiary);
 	transition: all 0.2s ease-in-out;
 }
 
 .settings-container:hover .settings-icon {
-	color: var(--text-color);
+	color: var(--color-text-primary);
 }
 
 .settings-container.active .settings-icon {
 	transform: rotate(90deg);
-	color: var(--text-color);
+	color: var(--color-text-primary);
 }
 
 .profile-info {
@@ -74,7 +72,7 @@
 .profile-name {
 	font-size: var(--font-size-pre-l);
 	font-weight: bold;
-	color: var(--text-color);
+	color: var(--color-text-primary);
 	margin-bottom: var(--offset-s);
 }
 
@@ -85,10 +83,10 @@
 
 .profile-status {
 	font-size: var(--font-size-m);
-	background: var(--lightgreen-color);
+	background-color: var(--color-accent-secondary);
 	padding: var(--offset-xs) var(--offset-s);
 	border-radius: var(--border-radius-s);
-	color: var(--green-color);
+	color: var(--color-accent-primary);
 	display: flex;
 	align-items: center;
 	gap: var(--offset-s);
@@ -96,6 +94,21 @@
 	width: 100px;
 	justify-content: space-between;
 	margin-bottom: var(--offset-xs);
+}
+
+.profile-status.online {
+	background-color: var(--color-bg-status-online);
+	color: var(--color-text-status-online);
+}
+
+.profile-status.busy {
+	background-color: var(--color-bg-status-busy);
+	color: var(--color-text-status-busy);
+}
+
+.profile-status.offline {
+	background-color: var(--color-bg-status-offline);
+	color: var(--color-text-status-offline);
 }
 
 .status-arrow {
@@ -107,18 +120,30 @@
 	transform: rotate(0deg);
 }
 
-/* Стили для пунктов статуса */
 .status-option {
 	padding: var(--offset-xs) var(--offset-s);
 	border-radius: var(--border-radius-s);
 	cursor: pointer;
-	transition: background-color 0.2s ease;
-	color: var(--text-color);
+	transition: background-color 0.2s ease, color 0.2s ease;
+	color: var(--color-text-primary);
 }
 
-.status-option:hover,
-.status-option.active {
-	background-color: var(--lightgreen-color);
+.status-option.online:hover,
+.status-option.online.active {
+	background-color: var(--color-bg-status-online);
+	color: var(--color-text-status-online);
+}
+
+.status-option.busy:hover,
+.status-option.busy.active {
+	background-color: var(--color-bg-status-busy);
+	color: var(--color-text-status-busy);
+}
+
+.status-option.offline:hover,
+.status-option.offline.active {
+	background-color: var(--color-bg-status-offline);
+	color: var(--color-text-status-offline);
 }
 
 .status-option::before {
@@ -134,12 +159,16 @@
 .status-dropdown {
 	gap: var(--offset-xxs);
 	width: 100%;
+	background-color: var(--color-bg-secondary);
+	border: 1.5px solid var(--color-border-secondary);
 }
 
 .settings-dropdown {
 	right: -5px;
 	margin-top: var(--offset-xs);
 	padding: var(--offset-xs);
+	background-color: var(--color-bg-secondary);
+	border: 1.5px solid var(--color-border-secondary);
 }
 
 .settings-dropdown > li {
@@ -150,9 +179,9 @@
 	border-radius: var(--border-radius-s);
 	cursor: pointer;
 	transition: background-color 0.2s ease;
-	color: var(--text-color);
+	color: var(--color-text-primary);
 }
 
 .settings-dropdown > li:hover {
-	background-color: var(--lightgreen-color);
+	background-color: var(--color-accent-secondary);
 }

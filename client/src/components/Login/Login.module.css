@@ -12,14 +12,16 @@
 .form > h2 {
 	text-align: center;
 	font-size: var(--font-size-l);
-	color: var(--text-color);
+	color: var(--color-text-primary);
 }
 
 .message {
-	color: var(--text-color);
+	color: var(--color-text-primary);
 	text-align: center;
 }
 
 .link {
-	color: var(--green-color);
+	color: var(--color-accent-primary);
+	border-bottom: 1.5px solid var(--color-accent-primary);
+	text-decoration: none;
 }

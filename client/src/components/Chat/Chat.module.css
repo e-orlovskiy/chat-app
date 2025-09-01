@@ -4,13 +4,13 @@
 	flex: 1;
 	height: 100%;
 	min-height: 0;
-	background: var(--chat-bg-color);
+	background-color: var(--color-bg-tertiary);
 	border-radius: var(--border-radius-m);
 }
 
 .chat-container__title {
 	text-align: center;
-	color: var(--input-text-light-color);
+	color: var(--color-text-tertiary);
 	font-size: var(--font-size-l);
 	height: 100%;
 	display: flex;
@@ -45,10 +45,9 @@
 .date-group__header {
 	position: sticky;
 	top: var(--offset-s);
-	margin: 0 auto;
+	margin: 0 auto 5px;
 	padding: var(--offset-xs) var(--offset-s);
+	border: 1.5px solid var(--color-border-secondary);
 	border-radius: var(--border-radius-m);
-	background: var(--input-text-light-color);
-	color: var(--input-text-color);
-	box-shadow: var(--group-element-shadow);
+	color: var(--color-text-tertiary);
 }

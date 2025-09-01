@@ -6,23 +6,43 @@
 }
 
 :root {
-	/* цвета */
-	--text-color: #0b1433;
-	--primary-color: #ffffff;
-	--green-color: #00a48a;
-	--lightgreen-color: #c1e9e2;
-	--border-color: #f2f2f299;
-	--input-color: #eff3f6;
-	--input-text-light-color: #b5b9c8;
-	--input-text-color: #0b1433;
-	--chat-bg-color: #edf0f6;
-	--my-message-bg-color: #cdd0df;
-	--blue-color: #6cb3ff;
-	--red-color: #ff7a7a;
-	--my-message-date-color: #687583;
-	/* шрифты */
+	/* COLOR PALETTE */
+	/* app base colors */
+	--color-bg-primary: #ffffff;
+	--color-bg-secondary: #eff3f6;
+	--color-bg-tertiary: #edf0f6;
+	--color-bg-quaternary: #d1d4e2;
+	/* text colors */
+	--color-text-primary: #0b1433;
+	--color-text-secondary: #687583;
+	--color-text-tertiary: #b5b9c8;
+	--color-text-on-accent: #ffffff;
+	/* accent and system colors */
+	--color-accent-primary: #00a48a;
+	--color-accent-secondary: #c1e9e2;
+	--color-accent-tertiary: #0b1433;
+	--color-info: #6cb3ff;
+	--color-success: #00a48a;
+	--color-warning: #ffaa00;
+	--color-error: #ff7a7a;
+	/* state colors */
+	--color-border-primary: #ffffff;
+	--color-border-secondary: #b5b9c8;
+	--color-my-message-bg: #cdd0df;
+	--color-message-bg: #ffffff;
+	--color-message-date: #687583;
+	/* status colors */
+	--color-bg-status-online: #c1e9e2;
+	--color-bg-status-busy: #f6bbbd;
+	--color-bg-status-offline: #e2e4ed;
+	--color-text-status-online: #00a48a;
+	--color-text-status-busy: #de4146;
+	--color-text-status-offline: #7f818b;
+
+	/* FONTS */
 	--primary-font: 'Ubuntu Sans', sans-serif;
-	/* размеры шрифта */
+
+	/* FONT SIZES */
 	--font-size-xxs: 10px;
 	--font-size-xs: 12px;
 	--font-size-s: 14px;
@@ -31,19 +51,22 @@
 	--font-size-l: 32px;
 	--font-size-xl: 42px;
 	--font-size-logo: 52px;
-	/* отступы */
+
+	/* OFFSETS */
 	--offset-xxs: 2px;
 	--offset-xs: 4px;
 	--offset-s: 8px;
 	--offset-m: 16px;
 	--offset-l: 32px;
 	--offset-xl: 64px;
-	/*  закругления */
+
+	/* RADIUS */
 	--border-radius-s: 4px;
 	--border-radius-m: 12px;
 	--border-radius-l: 16px;
 	--border-radius-xl: 32px;
-	/* тени */
+
+	/* SHADOWS */
 	--main-box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px,
 		rgba(0, 0, 0, 0.23) 0px 3px 6px;
 	--input-box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px,
@@ -60,6 +83,21 @@
 	font-family: var(--primary-font);
 }
 
+/* DARK THEME */
+body.dark {
+	--color-bg-primary: #1a1a2e;
+	--color-bg-secondary: #16213e;
+	--color-bg-tertiary: #edf0f6;
+	--color-text-primary: #ffffff;
+	--color-accent-primary: #00a48a;
+	--color-accent-secondary: #005a4e;
+	--color-text-tertiary: #7f8c8d;
+	--input-text-color: #ffffff;
+	--my-message-bg-color: #1b3a6a;
+	--color-info: #3a7bd5;
+	--color-error: hsl(0, 69%, 50%);
+}
+
 html,
 body,
 #root {
@@ -67,30 +105,11 @@ body,
 }
 
 body {
-	background-color: var(--primary-color);
-}
-
-body.dark {
-	--text-color: #ffffff;
-	--primary-color: #1a1a2e;
-	--green-color: #00a48a;
-	--lightgreen-color: #005a4e;
-	--border-color: #2d2d4299;
-	--input-color: #16213e;
-	--input-text-light-color: #7f8c8d;
-	--input-text-color: #ffffff;
-	--chat-bg-color: #0f3460;
-	--my-message-bg-color: #1b3a6a;
-	--blue-color: #3a7bd5;
-	--red-color: hsl(0, 69%, 50%);
-}
-
-body {
-	background-color: var(--primary-color);
+	background-color: var(--color-bg-primary);
 	transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 * {
 	scrollbar-width: thin;
-	scrollbar-color: var(--input-text-light-color) transparent;
+	scrollbar-color: var(--color-text-tertiary) transparent;
 }

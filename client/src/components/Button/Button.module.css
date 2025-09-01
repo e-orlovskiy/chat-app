@@ -1,11 +1,12 @@
 .button {
+	box-sizing: border-box;
 	position: relative;
 	padding: var(--offset-s);
 	border-radius: var(--border-radius-m);
 	font-size: var(--font-size-m);
-	border: none;
-	background: var(--text-color);
-	color: var(--primary-color);
+	border: 1.5px solid var(--color-accent-tertiary);
+	background-color: var(--color-accent-tertiary);
+	color: var(--color-text-on-accent);
 	cursor: pointer;
 	transition: all 0.3s cubic-bezier(0.15, 0.83, 0.66, 1);
 	overflow: hidden;
@@ -25,7 +26,6 @@
 	z-index: 1;
 }
 
-/* Стили для неактивного состояния */
 .inactive {
 	cursor: not-allowed;
 	position: relative;

@@ -55,6 +55,7 @@ const chatSlice = createSlice({
 	name: 'chat',
 	initialState: {
 		chats: [],
+		chatsLastMessages: [],
 		currentChat: null,
 		messages: [],
 		status: 'idle',
@@ -168,6 +169,7 @@ const chatSlice = createSlice({
 			state.loadingMore = false
 			state.onlineUsers = []
 			state.typingUsers = []
+			state.chatsLastMessages = []
 		}
 	},
 	extraReducers: builder => {
@@ -193,6 +195,15 @@ const chatSlice = createSlice({
 				state.hasMore = hasMore
 				state.status = 'succeeded'
 				state.loadingMore = false
+				state.chatsLastMessages = data.map(message => {
+					return {
+						chatId: message._id,
+						_id: message.lastMessage._id,
+						text: message.lastMessage.text,
+						createdAt: message.lastMessage.createdAt,
+						author: message.lastMessage.author
+					}
+				})
 			})
 			.addCase(getUserChats.rejected, (state, action) => {
 				state.error = action.payload

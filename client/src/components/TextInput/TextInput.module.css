@@ -1,12 +1,13 @@
 .input-container {
+	box-sizing: border-box;
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
-	background: var(--input-color);
+	background-color: var(--color-bg-secondary);
 	padding: var(--offset-s);
 	border-radius: var(--border-radius-m);
 	gap: var(--offset-xs);
-	box-shadow: var(--input-box-shadow);
+	border: 1.5px solid var(--color-border-secondary);
 }
 
 .input-container > input {
@@ -20,21 +21,26 @@
 }
 
 .input-container > input::placeholder {
-	color: var(--input-text-light-color);
+	color: var(--color-text-tertiary);
 }
 
 .input-container > .icon {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: var(--input-text-light-color);
+	color: var(--color-text-secondary);
 }
 
 .input-container > .password-icon {
-	color: var(--text-color);
+	color: var(--color-text-tertiary);
+	transition: color 0.25ms ease;
+}
+
+.input-container > .password-icon:hover {
+	color: var(--color-text-primary);
 }
 
 .input-container > .search-icon {
-	color: var(--input-text-light-color);
+	color: var(--color-text-secondary);
 	cursor: pointer;
 }

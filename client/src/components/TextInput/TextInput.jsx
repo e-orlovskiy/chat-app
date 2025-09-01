@@ -30,7 +30,9 @@ function TextInput({ value, onChange, onClick = null, ...props }) {
 				{...props}
 				value={value}
 				onChange={onChange}
-				type={props.type === 'password' && !isPasswordVisible ? 'password' : 'text'}
+				type={
+					props.type === 'password' && !isPasswordVisible ? 'password' : 'text'
+				}
 			/>
 			{props.type === 'password' && (
 				<span

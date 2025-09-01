@@ -15,7 +15,7 @@
 
 .message__text-container {
 	position: relative;
-	background: var(--primary-color);
+	background-color: var(--color-message-bg);
 	border-radius: var(--border-radius-l);
 	padding: var(--offset-s) var(--offset-m);
 }
@@ -42,11 +42,11 @@
 	overflow-wrap: break-word;
 	word-break: break-word;
 	hyphens: auto;
-	color: var(--input-text-color);
+	color: var(--color-text-primary);
 }
 
 .message.own .message__text-container {
-	background: var(--my-message-bg-color);
+	background: var(--color-my-message-bg);
 }
 
 .message.own .message__text-container::after {
@@ -57,7 +57,7 @@
 
 .message__avatar {
 	display: flex;
-	border: 2px solid var(--primary-color);
+	border: 2px solid var(--color-border-primary); /*нужно менять*/
 	flex-grow: 0;
 	flex-shrink: 0;
 	width: 35px;
@@ -66,7 +66,7 @@
 	object-fit: cover;
 	object-position: center;
 	align-self: flex-end;
-	margin-bottom: var(--offset-s);
+	margin-bottom: var(--offset-xs);
 }
 
 .message__temp-blank {
@@ -93,30 +93,12 @@
 	width: fit-content;
 }
 
-/* .message__author-and-date {
-	display: flex;
-	gap: var(--offset-xs);
-	align-items: center;
-	justify-content: flex-start;
-}
-
-.message.own .message__author-and-date {
-	justify-content: flex-end;
-} */
-
-/* .message__author,
-.message__date {
-	font-size: var(--font-size-s);
-	color: var(--text-color);
-} */
-
 .message__date {
 	display: flex;
 	font-size: var(--font-size-xxs);
 	justify-content: flex-start;
 	text-align: right;
-	/* color: var(--input-text-light-color); */
-	color: var(--my-message-date-color);
+	color: var(--color-message-date);
 }
 
 .message.own .message__date {

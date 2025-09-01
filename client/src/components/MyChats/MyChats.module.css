@@ -18,7 +18,7 @@
 .chats-title {
 	font-weight: normal;
 	font-size: var(--font-size-m);
-	color: var(--input-text-light-color);
+	color: var(--color-text-tertiary);
 }
 
 .chats-controls {
@@ -33,10 +33,10 @@
 	box-sizing: content-box;
 	flex-grow: 0;
 	font-size: var(--font-size-m);
-	background: var(--input-color);
+	background-color: var(--color-bg-secondary);
 	padding: var(--offset-xs);
 	border-radius: var(--border-radius-m);
-	color: var(--green-color);
+	color: var(--color-accent-primary);
 	cursor: not-allowed;
 }
 

@@ -11,9 +11,9 @@ import UserAvatar from '../UserAvatar/UserAvatar'
 import styles from './Profile.module.css'
 
 const statusOptions = [
-	{ value: 'online', color: 'var(--green-color)' },
-	{ value: 'busy', color: 'var(--red-color)' },
-	{ value: 'offline', color: 'var(--input-text-light-color)' }
+	{ value: 'online', color: 'var(--color-text-status-online)' },
+	{ value: 'busy', color: 'var(--color-text-status-busy)' },
+	{ value: 'offline', color: 'var(--color-text-status-offline)' }
 ]
 
 const Profile = () => {
@@ -96,7 +96,10 @@ const Profile = () => {
 				{/* Status dropdown */}
 				<div className={cn(styles['status-container'])}>
 					<div
-						className={cn(styles['profile-status'])}
+						className={cn(
+							styles['profile-status'],
+							cn(styles[currentStatus.value])
+						)}
 						onClick={handleToggleStatusDropdown}
 					>
 						{currentStatus.value}
@@ -111,9 +114,13 @@ const Profile = () => {
 						{statusOptions.map(option => (
 							<li
 								key={option.value}
-								className={cn(styles['status-option'], {
-									[styles['active']]: option.value === currentStatus.value
-								})}
+								className={cn(
+									styles['status-option'],
+									{
+										[styles['active']]: option.value === currentStatus.value
+									},
+									cn(styles[option.value])
+								)}
 								onClick={e => handleStatusChange(option.value, e)}
 								style={{ '--status-color': option.color }}
 							>

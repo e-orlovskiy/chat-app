@@ -1,7 +1,7 @@
 .main-layout {
 	height: 100%;
 	width: 100%;
-	background-color: var(--chat-bg-color);
+	background-color: var(--color-bg-tertiary);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -12,7 +12,7 @@
 	width: 1200px;
 	height: 750px;
 	display: flex;
-	background-color: var(--primary-color);
+	background-color: var(--color-bg-primary);
 	border-radius: var(--border-radius-l);
 	box-shadow: var(--main-box-shadow);
 	padding: var(--offset-m);
