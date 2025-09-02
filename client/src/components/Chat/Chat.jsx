@@ -6,6 +6,7 @@ import {
 	useRef,
 	useState
 } from 'react'
+import { BsLayoutSidebarInset } from 'react-icons/bs'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getHasRefreshFailed, resetRefreshFlag } from '../../api/axios'
@@ -13,7 +14,8 @@ import defaultAvatar from '../../assets/default-avatar.avif'
 import {
 	getChatMessages,
 	resetMessages,
-	setCurrentChat
+	setCurrentChat,
+	setShowSidebarMobile
 } from '../../features/chat/chatSlice'
 import { useSocketChat } from '../../hooks/useSocketChats'
 import { groupMessages } from '../../utils/groupMessages'
@@ -45,7 +47,8 @@ function Chat() {
 		chatMessages,
 		messagesHasMore,
 		messagesLoading,
-		messagesPage
+		messagesPage,
+		showSidebarMobile
 	} = useSelector(state => ({
 		currentUser: state.auth.user,
 		currentChat: state.chat.currentChat,
@@ -53,8 +56,13 @@ function Chat() {
 		chatMessages: state.chat.messages,
 		messagesHasMore: state.chat.messagesHasMore,
 		messagesLoading: state.chat.messagesLoading,
-		messagesPage: state.chat.messagesPage
+		messagesPage: state.chat.messagesPage,
+		showSidebarMobile: state.chat.showSidebarMobile
 	}))
+
+	const handleToggleSidebar = () => {
+		dispatch(setShowSidebarMobile(!showSidebarMobile))
+	}
 
 	const scrollToBottom = useCallback(() => {
 		requestAnimationFrame(() => {
@@ -166,9 +174,17 @@ function Chat() {
 	return (
 		<div className={cn(styles['chat-container'])}>
 			{!currentChat ? (
-				<h2 className={styles['chat-container__title']}>
-					start a conversation <br /> :)
-				</h2>
+				<>
+					<div
+						className={styles['chat-container__show-sidebar-mobile']}
+						onClick={handleToggleSidebar}
+					>
+						<BsLayoutSidebarInset />
+					</div>
+					<h2 className={styles['chat-container__title']}>
+						start a conversation <br /> :)
+					</h2>
+				</>
 			) : (
 				<>
 					<ChatHeader interlocutor={interlocutor} />

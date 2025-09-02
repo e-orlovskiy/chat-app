@@ -8,6 +8,16 @@
 	border-radius: var(--border-radius-m);
 }
 
+.chat-container__show-sidebar-mobile {
+	display: flex;
+	font-size: var(--font-size-pre-l);
+	align-items: center;
+	cursor: pointer;
+	color: var(--color-text-tertiary);
+	margin: var(--offset-m) 0 0 var(--offset-m);
+	position: absolute;
+}
+
 .chat-container__title {
 	text-align: center;
 	color: var(--color-text-tertiary);

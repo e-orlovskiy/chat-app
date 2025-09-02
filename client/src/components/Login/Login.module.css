@@ -7,6 +7,20 @@
 	padding: var(--offset-l) calc(var(--offset-l) + 1.5px) var(--offset-l)
 		var(--offset-l);
 	gap: var(--offset-s);
+	max-width: 600px;
+}
+
+@media (max-width: 960px) {
+	.form {
+		flex-grow: 1;
+	}
+}
+
+@media (max-width: 425px) {
+	.form {
+		padding: var(--offset-s);
+		width: 100%;
+	}
 }
 
 .form > h2 {

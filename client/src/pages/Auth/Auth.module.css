@@ -4,6 +4,14 @@
 	align-items: center;
 	justify-content: center;
 	transition: background-color 0.3s ease, color 0.3s ease;
+	padding: var(--offset-l);
+}
+
+@media (max-width: 425px) {
+	.auth-container {
+		padding: 0;
+		width: 100%;
+	}
 }
 
 .forms-container {
@@ -20,6 +28,14 @@
 	scroll-snap-type: x mandatory;
 }
 
+@media (max-width: 425px) {
+	.forms-container {
+		padding: 0;
+		width: 100%;
+		box-shadow: none;
+	}
+}
+
 .section {
 	position: relative;
 	overflow-y: hidden;
@@ -28,6 +44,13 @@
 	flex-shrink: 0;
 	width: 450px;
 	height: 100%;
+}
+
+.mobile-section {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .section-2 {

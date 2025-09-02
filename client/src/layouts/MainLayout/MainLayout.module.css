@@ -6,6 +6,13 @@
 	align-items: center;
 	justify-content: center;
 	transition: background-color 0.3s ease, color 0.3s ease;
+	padding: var(--offset-s);
+}
+
+@media (max-width: 960px) {
+	.main-layout {
+		padding: 0;
+	}
 }
 
 .main-layout__container {
@@ -18,4 +25,13 @@
 	padding: var(--offset-m);
 	transition: background-color 0.3s ease, color 0.3s ease;
 	gap: var(--offset-m);
+}
+
+@media (max-width: 960px) {
+	.main-layout__container {
+		width: 100%;
+		height: 100%;
+		border-radius: 0;
+		padding: 0;
+	}
 }

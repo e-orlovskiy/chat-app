@@ -38,6 +38,7 @@
 
 .message__text {
 	font-size: var(--font-size-m);
+	white-space: pre-wrap;
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	word-break: break-word;

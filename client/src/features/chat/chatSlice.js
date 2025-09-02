@@ -68,7 +68,8 @@ const chatSlice = createSlice({
 		loadingMore: false,
 		messagesLoading: false,
 		onlineUsers: [],
-		typingUsers: []
+		typingUsers: [],
+		showSidebarMobile: false
 	},
 	reducers: {
 		addMessage: (state, action) => {
@@ -170,6 +171,10 @@ const chatSlice = createSlice({
 			state.onlineUsers = []
 			state.typingUsers = []
 			state.chatsLastMessages = []
+			state.showSidebarMobile = false
+		},
+		setShowSidebarMobile: (state, action) => {
+			state.showSidebarMobile = action.payload
 		}
 	},
 	extraReducers: builder => {
@@ -259,6 +264,7 @@ export const {
 	resetChatState,
 	clearError,
 	clearNotification,
-	fullReset
+	fullReset,
+	setShowSidebarMobile
 } = chatSlice.actions
 export default chatSlice.reducer

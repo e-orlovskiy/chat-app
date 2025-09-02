@@ -1,6 +1,10 @@
 import cn from 'classnames'
 import debounce from 'lodash.debounce'
 import { useEffect, useMemo, useState } from 'react'
+import { BsLayoutSidebarInsetReverse } from 'react-icons/bs'
+import { useDispatch, useSelector } from 'react-redux'
+import { setShowSidebarMobile } from '../../features/chat/chatSlice'
+import useMediaQuery from '../../hooks/useMediaQuery'
 import MyChats from '../MyChats/MyChats'
 import Profile from '../Profile/Profile'
 import TextInput from '../TextInput/TextInput'
@@ -10,6 +14,14 @@ function Sidebar() {
 	const [inputValue, setInputValue] = useState('')
 	const [searchTerm, setSearchTerm] = useState('')
 	const [searchFocused, setSearchFocused] = useState(false)
+	const { showSidebarMobile } = useSelector(state => state.chat)
+	const dispatch = useDispatch()
+
+	const isMobile = useMediaQuery('(max-width: 960px)')
+
+	const handleToggleSidebar = () => {
+		dispatch(setShowSidebarMobile(!showSidebarMobile))
+	}
 
 	const debouncedSearch = useMemo(
 		() =>
@@ -18,6 +30,8 @@ function Sidebar() {
 			}, 500),
 		[]
 	)
+
+	useEffect(() => {}, [showSidebarMobile])
 
 	useEffect(() => {
 		return () => debouncedSearch.cancel()
@@ -38,8 +52,18 @@ function Sidebar() {
 	}
 
 	return (
-		<div className={cn(styles.sidebar)}>
+		<div
+			className={cn(styles['sidebar'], {
+				[styles['active']]: isMobile && showSidebarMobile
+			})}
+		>
 			<div className={styles['sidebar__header']}>
+				<div
+					className={cn(styles['sidebar__show-icon'])}
+					onClick={handleToggleSidebar}
+				>
+					<BsLayoutSidebarInsetReverse />
+				</div>
 				<h1 className={cn(styles.title)}>Chat App</h1>
 			</div>
 			<div className={cn(styles.underline)}></div>
@@ -51,7 +75,11 @@ function Sidebar() {
 				value={inputValue}
 				onChange={handleChange}
 			/>
-			<MyChats searchFocused={searchFocused} searchTerm={searchTerm} inputValue={inputValue} />
+			<MyChats
+				searchFocused={searchFocused}
+				searchTerm={searchTerm}
+				inputValue={inputValue}
+			/>
 		</div>
 	)
 }
