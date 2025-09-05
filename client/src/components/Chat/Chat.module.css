@@ -9,13 +9,19 @@
 }
 
 .chat-container__show-sidebar-mobile {
-	display: flex;
+	display: none;
 	font-size: var(--font-size-pre-l);
 	align-items: center;
 	cursor: pointer;
 	color: var(--color-text-tertiary);
 	margin: var(--offset-m) 0 0 var(--offset-m);
 	position: absolute;
+}
+
+@media (max-width: 960px) {
+	.chat-container__show-sidebar-mobile {
+		display: flex;
+	}
 }
 
 .chat-container__title {

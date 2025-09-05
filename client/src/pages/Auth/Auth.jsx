@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
 import { TbMessageDots } from 'react-icons/tb'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import Login from '../../components/Login/Login'
 import Register from '../../components/Register/Register'
 import useMediaQuery from '../../hooks/useMediaQuery'
@@ -19,7 +19,6 @@ function Auth() {
 	})
 	const formsContRef = useRef(null)
 	const location = useLocation()
-	const navigate = useNavigate()
 	const isMobile = useMediaQuery('(max-width: 960px)')
 
 	useEffect(() => {

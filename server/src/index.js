@@ -29,8 +29,16 @@ const app = express()
 
 app.use(
 	cors({
-		origin: [process.env.CLIENT_URL, 'http://localhost:5174'],
-		credentials: true
+		origin: [
+			process.env.CLIENT_URL,
+			'http://localhost:5173',
+			'http://192.168.0.99:5173',
+			'http://172.19.112.1:5173',
+			'http://localhost:5174'
+		],
+		credentials: true,
+		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+		allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 	})
 )
 // app.use(morgan('dev'))
@@ -48,8 +56,15 @@ const server = http.createServer(app)
 
 const io = new IOServer(server, {
 	cors: {
-		origin: [process.env.CLIENT_URL, 'http://localhost:5174'],
-		credentials: true
+		origin: [
+			process.env.CLIENT_URL,
+			'http://localhost:5173',
+			'http://192.168.0.99:5173',
+			'http://172.19.112.1:5173',
+			'http://localhost:5174'
+		],
+		credentials: true,
+		methods: ['GET', 'POST']
 	}
 })
 

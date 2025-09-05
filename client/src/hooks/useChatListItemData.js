@@ -2,7 +2,10 @@
 import { useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { createOrGetChat } from '../features/chat/chatSlice'
+import {
+	createOrGetChat,
+	setShowSidebarMobile
+} from '../features/chat/chatSlice'
 import { formatTime } from '../utils/formatTime'
 
 export const useChatListItemData = ({
@@ -18,10 +21,13 @@ export const useChatListItemData = ({
 	const currentChat = useSelector(state => state.chat.currentChat)
 	const navigate = useNavigate()
 	const dispatch = useDispatch()
+	const showSidebarMobile = useSelector(state => state.chat.showSidebarMobile)
 
 	const handleClick = async () => {
 		if (isLoading) return
 		setIsLoading(true)
+
+		if (showSidebarMobile) dispatch(setShowSidebarMobile(false))
 
 		try {
 			if (!isSearchResult && chatId) {

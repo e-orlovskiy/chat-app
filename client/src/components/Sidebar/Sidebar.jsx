@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import debounce from 'lodash.debounce'
 import { useEffect, useMemo, useState } from 'react'
-import { BsLayoutSidebarInsetReverse } from 'react-icons/bs'
+import { IoClose } from 'react-icons/io5'
 import { useDispatch, useSelector } from 'react-redux'
 import { setShowSidebarMobile } from '../../features/chat/chatSlice'
 import useMediaQuery from '../../hooks/useMediaQuery'
@@ -58,13 +58,13 @@ function Sidebar() {
 			})}
 		>
 			<div className={styles['sidebar__header']}>
+				<h1 className={cn(styles.title)}>Chat App</h1>
 				<div
 					className={cn(styles['sidebar__show-icon'])}
 					onClick={handleToggleSidebar}
 				>
-					<BsLayoutSidebarInsetReverse />
+					<IoClose />
 				</div>
-				<h1 className={cn(styles.title)}>Chat App</h1>
 			</div>
 			<div className={cn(styles.underline)}></div>
 			<Profile />

@@ -8,6 +8,12 @@
 	position: relative;
 }
 
+@media (max-width: 768px) {
+	.message {
+		max-width: 100%;
+	}
+}
+
 .message.own {
 	align-self: flex-end;
 	margin-right: var(--offset-xs);

@@ -39,7 +39,7 @@
 .settings-container {
 	position: absolute;
 	display: flex;
-	right: 5px;
+	right: 0px;
 	top: 0;
 	cursor: pointer;
 	margin-bottom: var(--offset-xs);
@@ -49,6 +49,12 @@
 	font-size: var(--font-size-pre-l);
 	color: var(--color-text-tertiary);
 	transition: all 0.2s ease-in-out;
+}
+
+@media (max-width: 960px) {
+	.settings-icon {
+		color: var(--color-text-secondary);
+	}
 }
 
 .settings-container:hover .settings-icon {
