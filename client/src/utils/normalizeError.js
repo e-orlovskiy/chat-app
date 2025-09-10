@@ -7,7 +7,7 @@ export const ERROR_TYPES = {
 	UNKNOWN: 'unknown'
 }
 
-export const normalizeError = error => {
+export const normalizeError = (error, isInitial = false) => {
 	if (!error || !error.isAxiosError) {
 		return {
 			type: ERROR_TYPES.UNKNOWN,
@@ -23,7 +23,8 @@ export const normalizeError = error => {
 		return {
 			type: ERROR_TYPES.AUTH,
 			message: data?.message || 'Unauthorized',
-			status: status
+			status: status,
+			isInitial
 		}
 	}
 	if (status >= 500) {

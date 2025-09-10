@@ -25,6 +25,16 @@
 	visibility: visible;
 }
 
+.chat-list__category-title {
+	color: var(--color-text-secondary);
+	text-align: center;
+	font-size: var(--font-size-s);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--offset-xs);
+}
+
 .chats-list.hidden {
 	opacity: 0;
 	visibility: hidden;

@@ -37,7 +37,7 @@ export const checkAuth = createAsyncThunk(
 		try {
 			return await checkAuthAPI()
 		} catch (error) {
-			return rejectWithValue(normalizeError(error))
+			return rejectWithValue(normalizeError(error, true))
 		}
 	}
 )
@@ -71,7 +71,8 @@ const authSlice = createSlice({
 		status: 'idle',
 		error: null,
 		notification: null,
-		uploadUserAvatarStatus: 'idle'
+		uploadUserAvatarStatus: 'idle',
+		hasChecked: false
 	},
 	reducers: {
 		setUser: (state, action) => {
@@ -94,6 +95,9 @@ const authSlice = createSlice({
 			state.status = 'idle'
 			state.error = null
 			state.notification = null
+		},
+		setHasChecked: state => {
+			state.hasChecked = false
 		}
 	},
 	extraReducers: builder => {
@@ -136,12 +140,14 @@ const authSlice = createSlice({
 				state.status = 'succeeded'
 				state.error = null
 				state.notification = null
+				state.hasChecked = true
 			})
 			.addCase(checkAuth.rejected, (state, action) => {
 				state.error = action.payload
 				state.status = 'failed'
 				state.user = null
 				state.notification = null
+				state.hasChecked = true
 			})
 			.addCase(logoutUser.pending, state => {
 				state.status = 'loading'
@@ -179,6 +185,7 @@ export const {
 	setError,
 	fullReset,
 	setNotification,
-	clearNotification
+	clearNotification,
+	setInitialError
 } = authSlice.actions
 export default authSlice.reducer

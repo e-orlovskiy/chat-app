@@ -90,9 +90,13 @@ function Chat() {
 			return
 		}
 
+		if (currentChat?._id !== chatId) {
+			dispatch(setCurrentChat(chats.find(c => c._id === chatId)))
+		}
+
 		joinChat(chatId)
 		dispatch(resetMessages())
-		dispatch(setCurrentChat(chats.find(c => c._id === chatId)))
+		// dispatch(setCurrentChat(chats.find(c => c._id === chatId)))
 		dispatch(getChatMessages({ chatId, page: 1, limit: 20 }))
 
 		return () => {
@@ -100,7 +104,16 @@ function Chat() {
 			leaveChat(chatId)
 			setInterlocutor(null)
 		}
-	}, [chatId, currentUser._id, dispatch, navigate, joinChat, leaveChat, chats])
+	}, [
+		chatId,
+		currentUser._id,
+		dispatch,
+		navigate,
+		joinChat,
+		leaveChat,
+		chats,
+		currentChat
+	])
 
 	useEffect(() => {
 		if (currentChat?.members && currentUser) {

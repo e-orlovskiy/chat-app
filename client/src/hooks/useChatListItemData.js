@@ -1,4 +1,3 @@
-// hooks/useChatListItemData.js
 import { useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -15,6 +14,7 @@ export const useChatListItemData = ({
 	userData
 }) => {
 	const [isLoading, setIsLoading] = useState(false)
+	const [showConfirmDialog, setShowConfirmDialog] = useState(false)
 	const currentUser = useSelector(state => state.auth.user)
 	const chats = useSelector(state => state.chat.chats)
 	const chatsLastMessages = useSelector(state => state.chat.chatsLastMessages)
@@ -22,6 +22,21 @@ export const useChatListItemData = ({
 	const navigate = useNavigate()
 	const dispatch = useDispatch()
 	const showSidebarMobile = useSelector(state => state.chat.showSidebarMobile)
+
+	const handleCreateChat = async () => {
+		setIsLoading(true)
+		try {
+			const result = await dispatch(
+				createOrGetChat({ members: [currentUser._id, userId] })
+			)
+			if (result.payload?.data) {
+				navigate(`/chat/${result.payload.data.chat._id}`)
+			}
+		} finally {
+			setIsLoading(false)
+			setShowConfirmDialog(false)
+		}
+	}
 
 	const handleClick = async () => {
 		if (isLoading) return
@@ -38,13 +53,7 @@ export const useChatListItemData = ({
 			if (isSearchResult && userId) {
 				if (currentChat?.members?.some(m => m._id === userId)) return
 
-				const result = await dispatch(
-					createOrGetChat({ members: [currentUser._id, userId] })
-				)
-
-				if (result.payload?.data) {
-					navigate(`/chat/${result.payload.data.chat._id}`)
-				}
+				setShowConfirmDialog(true)
 			}
 		} finally {
 			setIsLoading(false)
@@ -77,5 +86,13 @@ export const useChatListItemData = ({
 		}
 	}, [isSearchResult, userData, chats, chatsLastMessages, chatId, currentUser])
 
-	return { displayData, handleClick, isLoading }
+	return {
+		displayData,
+		handleClick,
+		isLoading,
+		activeChat: currentChat?._id,
+		showConfirmDialog,
+		setShowConfirmDialog,
+		handleCreateChat
+	}
 }

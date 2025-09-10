@@ -8,12 +8,14 @@ function MyChats({ searchFocused, searchTerm, inputValue }) {
 	return (
 		<div className={cn(styles['chats-container'])}>
 			<div className={cn(styles['chats-info'])}>
-				{!searchFocused && <h4 className={cn(styles['chats-title'])}>chats</h4>}
+				{!searchFocused && (
+					<h4 className={cn(styles['chats-title'])}>all chats</h4>
+				)}
 				{searchFocused && (
 					<h4
 						className={cn(styles['chats-title'], cn(styles['searchingDots']))}
 					>
-						searching
+						search
 					</h4>
 				)}
 				<div className={cn(styles['chats-controls'])}>

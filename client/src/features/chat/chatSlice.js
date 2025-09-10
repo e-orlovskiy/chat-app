@@ -203,10 +203,10 @@ const chatSlice = createSlice({
 				state.chatsLastMessages = data.map(message => {
 					return {
 						chatId: message._id,
-						_id: message.lastMessage._id,
-						text: message.lastMessage.text,
-						createdAt: message.lastMessage.createdAt,
-						author: message.lastMessage.author
+						_id: message.lastMessage?._id,
+						text: message.lastMessage?.text,
+						createdAt: message.lastMessage?.createdAt,
+						author: message.lastMessage?.author
 					}
 				})
 			})
@@ -224,7 +224,9 @@ const chatSlice = createSlice({
 				state.status = 'succeeded'
 				const newChat = action.payload.data.chat
 				const chatExists = state.chats.some(chat => chat._id === newChat._id)
-				if (!chatExists) state.chats.unshift(newChat)
+				if (!chatExists) {
+					state.chats = [...state.chats, newChat]
+				}
 			})
 			.addCase(createOrGetChat.rejected, (state, action) => {
 				state.error = action.payload

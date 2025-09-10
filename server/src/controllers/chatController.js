@@ -102,7 +102,11 @@ export const createOrGetChat = async (req, res, next) => {
 
 		const existingChat = await Chat.findOne({
 			members: { $all: members, $size: members.length }
-		}).populate('members', 'username')
+		}).populate({
+			path: 'members',
+			select: 'username avatar',
+			options: { lean: true }
+		})
 
 		if (existingChat) {
 			const interlocutor = existingChat.members.find(
@@ -125,10 +129,11 @@ export const createOrGetChat = async (req, res, next) => {
 			{ $addToSet: { chats: newChat._id } }
 		)
 
-		const populatedChat = await Chat.findById(newChat._id).populate(
-			'members',
-			'username'
-		)
+		const populatedChat = await Chat.findById(newChat._id).populate({
+			path: 'members',
+			select: 'username avatar',
+			options: { lean: true }
+		})
 
 		// Получаем информацию о собеседнике для нового чата
 		const interlocutor = populatedChat.members.find(

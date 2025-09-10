@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import { useCallback, useEffect, useRef } from 'react'
+import { RiUserSearchFill, RiUserSharedFill } from 'react-icons/ri'
 import { useDispatch, useSelector } from 'react-redux'
 import { getUserChats } from '../../features/chat/chatSlice'
 import { searchUsers } from '../../features/users/usersSlice'
@@ -28,6 +29,16 @@ function ChatList({ searchFocused, searchTerm, inputValue }) {
 			dispatch(searchUsers({ username: searchTerm, page: 1, limit: PAGE_SIZE }))
 		}
 	}, [showSearch, searchTerm, dispatch])
+
+	useEffect(() => {
+		const allInterlocutors = userState.searchResults.map(user => user.id)
+		const existingChats = chatState.chats.filter(chat => {
+			return (
+				allInterlocutors.includes(chat.members[0]._id) ||
+				allInterlocutors.includes(chat.members[1]._id)
+			)
+		})
+	}, [userState.searchResults, chatState.chats])
 
 	const loadNextChatPage = useCallback(() => {
 		if (chatState.status === 'loading' || !chatState.hasMore) return
@@ -133,13 +144,58 @@ function ChatList({ searchFocused, searchTerm, inputValue }) {
 		if (isEmpty) return <div className={styles.noResults}>No users found</div>
 		if (!searchTerm) return null
 
+		const allInterlocutors = userState.searchResults.map(user => user.id)
+		const existingChats = chatState.chats.filter(chat => {
+			return (
+				allInterlocutors.includes(chat.members[0]._id) ||
+				allInterlocutors.includes(chat.members[1]._id)
+			)
+		})
+		const noChatUsers = userState.searchResults.filter(user => {
+			return !existingChats.some(chat => {
+				return (
+					chat.members[0]._id === user._id || chat.members[1]._id === user._id
+				)
+			})
+		})
+
 		return (
 			<ul
 				className={cn(styles['chats-list'], styles['search-focused'], {
 					[styles.hidden]: !searchFocused
 				})}
 			>
-				{userState.searchResults.map((user, index) => (
+				<p className={styles['chat-list__category-title']}>
+					<RiUserSharedFill />
+					chatted ({existingChats.length})
+				</p>
+				{existingChats.length === 0 && (
+					<p className={styles['chat-list__category-title']}>no chats here</p>
+				)}
+				{existingChats.map((chat, index) => (
+					<div
+						key={chat._id}
+						ref={
+							index === userState.searchResults.length - 1
+								? lastSearchRef
+								: null
+						}
+					>
+						<ChatListItem chatId={chat._id} isSearchResult={false} />
+					</div>
+				))}
+				{userState.status === 'loading' && showSearch && (
+					<div className={styles.loading}>Searching users...</div>
+				)}
+
+				<p className={styles['chat-list__category-title']}>
+					<RiUserSearchFill />
+					not chatted ({noChatUsers.length})
+				</p>
+				{noChatUsers.length === 0 && (
+					<p className={styles['chat-list__category-title']}>no users here</p>
+				)}
+				{noChatUsers.map((user, index) => (
 					<div
 						key={user._id}
 						ref={
@@ -155,9 +211,6 @@ function ChatList({ searchFocused, searchTerm, inputValue }) {
 						/>
 					</div>
 				))}
-				{userState.status === 'loading' && showSearch && (
-					<div className={styles.loading}>Searching users...</div>
-				)}
 			</ul>
 		)
 	}

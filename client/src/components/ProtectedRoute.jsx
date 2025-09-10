@@ -6,25 +6,28 @@ import { checkAuth } from '../features/auth/authSlice'
 
 const ProtectedRoute = () => {
 	const dispatch = useDispatch()
-	const { user, status } = useSelector(state => state.auth)
+	const { user, status, hasChecked } = useSelector(state => state.auth)
 
 	useEffect(() => {
-		if (status === 'idle' && !getHasRefreshFailed()) dispatch(checkAuth())
-	}, [dispatch, status])
+		if (!hasChecked && status === 'idle' && !getHasRefreshFailed()) {
+			dispatch(checkAuth())
+		}
+	}, [dispatch, status, hasChecked])
 
-	if (status === 'loading' && !user) {
+	if (status === 'loading') {
 		return <p>Loading...</p>
 	}
-	if (status === 'failed' && !user) {
+
+	if (hasChecked && !user) {
 		return <Navigate to='/auth/login' replace />
 	}
-	if (status === 'succeeded' && !user) {
-		return <Navigate to='/auth/login' replace />
-	}
-	if (status === 'succeeded' && user) {
+
+	if (hasChecked && user) {
 		resetRefreshFlag()
 		return <Outlet />
 	}
+
+	return <p>Loading...</p>
 }
 
 export default ProtectedRoute

@@ -27,6 +27,11 @@ const GlobalNotificationHandler = () => {
 
 		if (!notification && !error) return
 
+		if (error?.type === 'auth' && error?.isInitial) {
+			dispatch(authClearError())
+			return
+		}
+
 		const timer = setTimeout(() => {
 			if (authError) dispatch(authClearError())
 			if (chatError) dispatch(chatClearError())
@@ -60,6 +65,7 @@ const GlobalNotificationHandler = () => {
 
 	const notification =
 		authError || chatError || authNotification || chatNotification
+
 	if (!notification) return null
 
 	return (

@@ -7,6 +7,12 @@
 	padding: var(--offset-s);
 	border-radius: var(--border-radius-m);
 	gap: var(--offset-s);
+	transition: 0.15s background-color;
+	cursor: pointer;
+}
+
+.chats-user--active {
+	background-color: var(--color-accent-tertiary);
 }
 
 .chats-user__user-and-text {
@@ -38,6 +44,11 @@
 .chats-user__username {
 	font-size: var(--font-size-m);
 	color: var(--color-text-primary);
+	transition: 0.15s color;
+}
+
+.chats-user--active .chats-user__username {
+	color: var(--color-text-on-accent);
 }
 
 .chats-user__last-message {

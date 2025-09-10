@@ -7,7 +7,7 @@ import Button from '../Button/Button'
 import TextInput from '../TextInput/TextInput'
 import styles from './Login.module.css'
 
-const Login = ({ formData, setFormData, isMobile = false }) => {
+const Login = ({ formData, setFormData }) => {
 	const { email, password } = formData
 	const dispatch = useDispatch()
 
