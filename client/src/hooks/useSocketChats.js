@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useSocket } from '../context/socket/useSocket'
-import { addMessage } from '../features/chat/chatSlice'
+import { addMessage, setError } from '../features/chat/chatSlice'
 
 export const useSocketChat = () => {
 	const socket = useSocket()
@@ -23,6 +23,10 @@ export const useSocketChat = () => {
 		socket.on('newMessage', handleNewMessage)
 		socket.on('connect_error', error => {
 			console.error('Socket connection error:', error)
+		})
+		socket.on('message_send_error', error => {
+			console.error('Socket error:', error.message)
+			dispatch(setError(error))
 		})
 
 		return () => {

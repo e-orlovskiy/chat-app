@@ -1,23 +1,8 @@
+// components/Chat/Chat.js
 import cn from 'classnames'
-import {
-	useCallback,
-	useEffect,
-	useLayoutEffect,
-	useRef,
-	useState
-} from 'react'
 import { BsLayoutSidebarInset } from 'react-icons/bs'
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate, useParams } from 'react-router-dom'
-import { getHasRefreshFailed, resetRefreshFlag } from '../../api/axios'
 import defaultAvatar from '../../assets/default-avatar.avif'
-import {
-	getChatMessages,
-	resetMessages,
-	setCurrentChat,
-	setShowSidebarMobile
-} from '../../features/chat/chatSlice'
-import { useSocketChat } from '../../hooks/useSocketChats'
+import { useChat } from '../../hooks/useChat'
 import { groupMessages } from '../../utils/groupMessages'
 import ChatHeader from '../ChatHeader/ChatHeader'
 import ChatInput from '../ChatInput/ChatInput'
@@ -25,160 +10,19 @@ import MessageBlock from '../MessageBlock/MessageBlock'
 import styles from './Chat.module.css'
 
 function Chat() {
-	const { chatId } = useParams()
-	const { joinChat, leaveChat, sendMessage } = useSocketChat()
-	const [messageText, setMessageText] = useState('')
-	const [interlocutor, setInterlocutor] = useState(null)
-	const [initialLoad, setInitialLoad] = useState(true)
-	const chats = useSelector(state => state.chat.chats)
-
-	const navigate = useNavigate()
-	const dispatch = useDispatch()
-
-	const messagesEndRef = useRef(null)
-	const messagesTopRef = useRef(null)
-	const scrollContainerRef = useRef(null)
-	const isPaginatingRef = useRef(false)
-
 	const {
-		currentUser,
 		currentChat,
 		chatStatus,
 		chatMessages,
-		messagesHasMore,
-		messagesLoading,
-		messagesPage,
-		showSidebarMobile
-	} = useSelector(state => ({
-		currentUser: state.auth.user,
-		currentChat: state.chat.currentChat,
-		chatStatus: state.chat.status,
-		chatMessages: state.chat.messages,
-		messagesHasMore: state.chat.messagesHasMore,
-		messagesLoading: state.chat.messagesLoading,
-		messagesPage: state.chat.messagesPage,
-		showSidebarMobile: state.chat.showSidebarMobile
-	}))
-
-	const handleToggleSidebar = () => {
-		dispatch(setShowSidebarMobile(!showSidebarMobile))
-	}
-
-	const scrollToBottom = useCallback(() => {
-		requestAnimationFrame(() => {
-			messagesEndRef.current?.scrollIntoView({ behavior: 'auto' })
-		})
-	}, [])
-
-	const handleSendMessage = useCallback(
-		text => {
-			if (!text || !text.trim() || !currentUser) return
-			sendMessage(text)
-			setMessageText('')
-		},
-		[currentUser, sendMessage]
-	)
-
-	useEffect(() => {
-		setInitialLoad(true)
-		resetRefreshFlag()
-	}, [chatId])
-
-	useEffect(() => {
-		if (!chatId) {
-			navigate('/')
-			return
-		}
-
-		if (currentChat?._id !== chatId) {
-			dispatch(setCurrentChat(chats.find(c => c._id === chatId)))
-		}
-
-		joinChat(chatId)
-		dispatch(resetMessages())
-		// dispatch(setCurrentChat(chats.find(c => c._id === chatId)))
-		dispatch(getChatMessages({ chatId, page: 1, limit: 20 }))
-
-		return () => {
-			dispatch(resetMessages())
-			leaveChat(chatId)
-			setInterlocutor(null)
-		}
-	}, [
-		chatId,
-		currentUser._id,
-		dispatch,
-		navigate,
-		joinChat,
-		leaveChat,
-		chats,
-		currentChat
-	])
-
-	useEffect(() => {
-		if (currentChat?.members && currentUser) {
-			const foundInterlocutor = currentChat.members.find(
-				member => member._id !== currentUser._id
-			)
-			setInterlocutor(foundInterlocutor || null)
-		}
-	}, [currentChat, currentUser])
-
-	useLayoutEffect(() => {
-		if (chatMessages.length > 0 && initialLoad) {
-			scrollToBottom()
-			setInitialLoad(false)
-		}
-	}, [chatMessages, initialLoad, scrollToBottom])
-
-	useLayoutEffect(() => {
-		if (chatMessages.length > 0 && !initialLoad) {
-			const last = chatMessages[chatMessages.length - 1]
-			if (last?.author?._id === currentUser._id) scrollToBottom()
-		}
-	}, [chatMessages, initialLoad, currentUser._id, scrollToBottom])
-
-	useEffect(() => {
-		if (!scrollContainerRef.current || !messagesTopRef.current) return
-		const container = scrollContainerRef.current
-
-		const observer = new IntersectionObserver(
-			async ([entry]) => {
-				if (
-					entry.isIntersecting &&
-					messagesHasMore &&
-					!messagesLoading &&
-					!isPaginatingRef.current
-				) {
-					if (getHasRefreshFailed()) return
-
-					isPaginatingRef.current = true
-					const oldScrollHeight = container.scrollHeight
-
-					try {
-						await dispatch(
-							getChatMessages({
-								chatId,
-								page: messagesPage + 1,
-								limit: 20
-							})
-						)
-					} catch (err) {
-						console.error('Failed to load messages page:', err)
-					} finally {
-						requestAnimationFrame(() => {
-							container.scrollTop = container.scrollHeight - oldScrollHeight
-							isPaginatingRef.current = false
-						})
-					}
-				}
-			},
-			{ root: container, rootMargin: '0px', threshold: 0 }
-		)
-
-		observer.observe(messagesTopRef.current)
-		return () => observer.disconnect()
-	}, [chatId, messagesHasMore, messagesLoading, messagesPage, dispatch])
+		messageText,
+		setMessageText,
+		messagesEndRef,
+		messagesTopRef,
+		scrollContainerRef,
+		handleToggleSidebar,
+		handleSendMessage,
+		currentUser
+	} = useChat()
 
 	if (chatStatus === 'loading') {
 		return <div className={styles.loadingContainer}>Loading chat...</div>
@@ -200,7 +44,7 @@ function Chat() {
 				</>
 			) : (
 				<>
-					<ChatHeader interlocutor={interlocutor} />
+					<ChatHeader chat={currentChat} />
 					<div className={cn(styles['chat-window'])}>
 						<div
 							className={styles['chat-window__main']}

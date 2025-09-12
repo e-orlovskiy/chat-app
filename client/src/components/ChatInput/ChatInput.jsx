@@ -7,7 +7,7 @@ function ChatInput({ messageText, setMessageText, onSendMessage }) {
 	const textareaRef = useRef(null)
 
 	const handleSend = () => {
-		if (messageText.trim()) {
+		if (messageText.trim() && !isSendDisabled) {
 			onSendMessage(messageText)
 			setMessageText('')
 			if (textareaRef.current) {
@@ -31,7 +31,7 @@ function ChatInput({ messageText, setMessageText, onSendMessage }) {
 		}
 	}, [messageText])
 
-	const isSendDisabled = !messageText.trim()
+	const isSendDisabled = !messageText.trim() || messageText.length > 400
 
 	return (
 		<div className={cn(styles['chat-input'])}>
@@ -54,6 +54,13 @@ function ChatInput({ messageText, setMessageText, onSendMessage }) {
 					<IoSend />
 				</button>
 			</div>
+			<p
+				className={cn(styles['chat-input__length'], {
+					[styles['error']]: messageText.length > 400
+				})}
+			>
+				{messageText.length} / 400
+			</p>
 		</div>
 	)
 }

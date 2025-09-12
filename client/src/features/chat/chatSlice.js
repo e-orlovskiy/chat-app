@@ -134,6 +134,10 @@ const chatSlice = createSlice({
 			state.messagesPage = 0
 		},
 
+		setError: (state, action) => {
+			state.error = action.payload
+		},
+
 		resetChatState: state => {
 			state.currentChat = null
 			state.messages = []
@@ -265,6 +269,7 @@ export const {
 	setUserTyping,
 	resetChatState,
 	clearError,
+	setError,
 	clearNotification,
 	fullReset,
 	setShowSidebarMobile
