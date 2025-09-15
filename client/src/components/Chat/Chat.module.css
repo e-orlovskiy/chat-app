@@ -8,6 +8,12 @@
 	border-radius: var(--border-radius-m);
 }
 
+@media (max-width: 960px) {
+	.chat-container {
+		border-radius: 0;
+	}
+}
+
 .chat-container__show-sidebar-mobile {
 	display: none;
 	font-size: var(--font-size-pre-l);

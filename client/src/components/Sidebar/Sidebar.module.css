@@ -15,7 +15,7 @@
 		position: absolute;
 		padding: var(--offset-s);
 		border-radius: 0;
-		background-color: var(--color-bg-quaternary);
+		background-color: var(--color-bg-primary);
 		border: 1.5px solid var(--color-border-secondary);
 		transform: translateX(-100%);
 		transition: 0.3s ease-in-out;
