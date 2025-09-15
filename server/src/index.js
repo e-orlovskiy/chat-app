@@ -91,27 +91,23 @@ io.use((socket, next) => {
 io.on('connection', socket => {
 	console.log('Новый пользователь подключился', socket.id)
 
-	// изменение статуса
 	// socket.on('changeStatus', ({ userId, status }) => {
 	// 	console.log(`Cтатус пользователя ${userId} изменился на ${status}`)
 	// 	io.emit('statusChanged', { userId, status })
 	// })
 
-	// присоединение к комнате
 	socket.on('joinRoom', async ({ chatId, userId, username }) => {
 		console.log(`Пользователь ${username} присоединился к комнате ${chatId}`)
 		socket.to(chatId).emit('userJoined', { chatId, userId, username })
 		socket.join(chatId)
 	})
 
-	// выход из комнаты
 	socket.on('leaveRoom', ({ chatId, userId, username }) => {
 		socket.leave(chatId)
 		console.log(`Пользователь ${username} вышел из комнаты ${chatId}`)
 		socket.to(chatId).emit('userLeft', { userId, username, chatId })
 	})
 
-	// отправка сообщения
 	socket.on('sendMessage', async ({ chatId, authorId, text }) => {
 		try {
 			if (text.length > 400) {
@@ -153,7 +149,7 @@ io.on('connection', socket => {
 	})
 
 	socket.on('disconnect', () => {
-		console.log('Пользователь отключился')
+		console.log('User disconnected')
 	})
 })
 

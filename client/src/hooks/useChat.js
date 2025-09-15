@@ -1,4 +1,3 @@
-// hooks/useChat.js
 import {
 	useCallback,
 	useEffect,
@@ -75,7 +74,6 @@ export function useChat() {
 		dispatch(setShowSidebarMobile(!showSidebarMobile))
 	}, [dispatch, showSidebarMobile])
 
-	// Эффекты загрузки данных
 	useEffect(() => {
 		setInitialLoad(true)
 		resetRefreshFlag()
@@ -87,13 +85,10 @@ export function useChat() {
 			return
 		}
 
-		// Найти чат в списке или загрузить его
 		const foundChat = chats.find(c => c._id === chatId)
 		if (foundChat) {
 			dispatch(setCurrentChat(foundChat))
 		} else {
-			// Если чата нет в списке, нужно его загрузить
-			// Это место для дополнительной логики загрузки чата
 			console.warn('Chat not found in list, need to load it')
 		}
 

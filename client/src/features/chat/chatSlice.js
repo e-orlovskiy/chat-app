@@ -7,7 +7,6 @@ import {
 	getUserChatsAPI
 } from './chatAPI'
 
-// 1. Users chats
 export const getUserChats = createAsyncThunk(
 	'chat/getUserChats',
 	async ({ page, limit }, { rejectWithValue }) => {
@@ -19,7 +18,6 @@ export const getUserChats = createAsyncThunk(
 	}
 )
 
-// 2. Create or get existing chat
 export const createOrGetChat = createAsyncThunk(
 	'chat/createOrGetChat',
 	async ({ members }, { rejectWithValue }) => {
@@ -31,7 +29,6 @@ export const createOrGetChat = createAsyncThunk(
 	}
 )
 
-// 4. Get chat messages
 export const getChatMessages = createAsyncThunk(
 	'chat/getChatMessages',
 	async ({ chatId, page = 1, limit = 20 }, { rejectWithValue }) => {
@@ -183,11 +180,9 @@ const chatSlice = createSlice({
 	},
 	extraReducers: builder => {
 		builder
-			// logout
 			.addCase(logoutUser.fulfilled, state => {
 				chatSlice.caseReducers.fullReset(state)
 			})
-			// getUserChats
 			.addCase(getUserChats.pending, (state, action) => {
 				if (action.meta.arg.page === 1) {
 					state.status = 'loading'
@@ -220,7 +215,6 @@ const chatSlice = createSlice({
 				state.loadingMore = false
 			})
 
-			// createOrGetChat
 			.addCase(createOrGetChat.pending, state => {
 				state.status = 'loading'
 			})
@@ -237,7 +231,6 @@ const chatSlice = createSlice({
 				state.status = 'failed'
 			})
 
-			// getChatMessages
 			.addCase(getChatMessages.pending, (state, action) => {
 				const page = action.meta.arg.page || 1
 				if (page === 1) state.messagesLoading = true

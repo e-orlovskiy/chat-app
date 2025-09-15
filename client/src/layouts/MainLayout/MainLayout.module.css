@@ -1,7 +1,7 @@
 .main-layout {
 	height: 100%;
 	width: 100%;
-	background-color: var(--color-bg-tertiary);
+	background-color: var(--color-bg-primary);
 	display: flex;
 	align-items: center;
 	justify-content: center;

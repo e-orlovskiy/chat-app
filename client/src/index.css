@@ -38,6 +38,8 @@
 	--color-text-status-online: #00a48a;
 	--color-text-status-busy: #de4146;
 	--color-text-status-offline: #7f818b;
+	/* scrollbar */
+	--color-scrollbar-bg: #b5b9c8;
 
 	/* FONTS */
 	--primary-font: 'Ubuntu Sans', sans-serif;
@@ -87,15 +89,20 @@
 body.dark {
 	--color-bg-primary: #1a1a2e;
 	--color-bg-secondary: #16213e;
-	--color-bg-tertiary: #edf0f6;
+	--color-bg-tertiary: #263152;
 	--color-text-primary: #ffffff;
+	--color-text-secondary: #7f8c8d;
+	--color-text-tertiary: #a5abc6;
 	--color-accent-primary: #00a48a;
 	--color-accent-secondary: #005a4e;
-	--color-text-tertiary: #7f8c8d;
 	--input-text-color: #ffffff;
-	--my-message-bg-color: #1b3a6a;
+	--color-my-message-bg: #0b1728;
+	--color-message-bg: #16213e;
 	--color-info: #3a7bd5;
 	--color-error: hsl(0, 69%, 50%);
+	--color-border-primary: #1a1a2e;
+	--color-border-secondary: #101010;
+	--color-scrollbar-bg: #1d233a;
 }
 
 html,
@@ -111,5 +118,9 @@ body {
 
 * {
 	scrollbar-width: thin;
-	scrollbar-color: var(--color-text-tertiary) transparent;
+	scrollbar-color: var(--color-scrollbar-bg) transparent;
+}
+
+*:hover {
+	scrollbar-color: var(--color-scrollbar-bg) transparent;
 }

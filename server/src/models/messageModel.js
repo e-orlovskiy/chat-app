@@ -14,7 +14,7 @@ const messageSchema = mongoose.Schema(
 		},
 		text: {
 			type: String,
-			required: [true, 'Сообщение не должно быть пустым'],
+			required: [true, 'Message cannot be empty'],
 			trim: true,
 			minlength: 1,
 			maxlength: 400
@@ -24,7 +24,6 @@ const messageSchema = mongoose.Schema(
 			default: Date.now
 		},
 		content: {
-			// в будущем будет использоваться для хранения медиафайлов
 			type: String
 		}
 	},

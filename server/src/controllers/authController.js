@@ -10,9 +10,7 @@ export const register = async (req, res, next) => {
 		if (userExists) {
 			console.log('test')
 			res.status(400)
-			throw new Error(
-				'Пользователь с таким email и(-или) username уже зарегистрирован'
-			)
+			throw new Error('User with this email and/or username already exists')
 		}
 
 		const user = new User({
@@ -26,12 +24,12 @@ export const register = async (req, res, next) => {
 		const tokens = generateTokens(user._id)
 
 		res.cookie('refreshToken', tokens.refreshToken, {
-			maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
+			maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
 			httpOnly: true
 		})
 
 		res.cookie('accessToken', tokens.accessToken, {
-			maxAge: 500 * 60 * 1000, // 500 минут
+			maxAge: 500 * 60 * 1000, // 500 minutes (temp)
 			httpOnly: true
 		})
 
@@ -53,24 +51,24 @@ export const login = async (req, res, next) => {
 
 		if (!user) {
 			res.status(400)
-			throw new Error('Неверный email или пароль')
+			throw new Error('Invalid email or password')
 		}
 
 		const isMatch = await user.correctPassword(password, user.password)
 		console.log(isMatch)
 		if (!isMatch) {
 			res.status(400)
-			throw new Error('Неверный email или пароль')
+			throw new Error('Invalid email or password')
 		}
 
 		const tokens = generateTokens(user._id)
 		res.cookie('refreshToken', tokens.refreshToken, {
-			maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
+			maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
 			httpOnly: true
 		})
 
 		res.cookie('accessToken', tokens.accessToken, {
-			maxAge: 500 * 60 * 1000, // 500 минут
+			maxAge: 500 * 60 * 1000, // 500 minutes (temp)
 			httpOnly: true
 		})
 
@@ -89,7 +87,7 @@ export const checkAuth = async (req, res, next) => {
 	try {
 		if (!req.user) {
 			res.status(401)
-			throw new Error('Вы не авторизованы')
+			throw new Error('You are not authorized')
 		}
 
 		res.json({
@@ -107,7 +105,7 @@ export const logout = async (req, res, next) => {
 	try {
 		res.clearCookie('refreshToken')
 		res.clearCookie('accessToken')
-		res.status(200).json({ message: 'Вы успешно вышли из аккаунта' })
+		res.status(200).json({ message: 'You have successfully logged out' })
 	} catch (err) {
 		next(err)
 	}
@@ -119,7 +117,7 @@ export const refreshToken = async (req, res, next) => {
 
 		if (!refreshToken) {
 			res.status(401)
-			throw new Error('Вы не авторизованы. Пожалуйста, войдите снова.')
+			throw new Error('You are not authorized. Please log in again.')
 		}
 
 		const decoded = jwt.verify(
@@ -131,18 +129,18 @@ export const refreshToken = async (req, res, next) => {
 
 		if (!user) {
 			res.status(401)
-			throw new Error('Вы не авторизованы. Пожалуйста, войдите снова.')
+			throw new Error('You are not authorized. Please log in again.')
 		}
 
 		const tokens = generateTokens(user._id)
 
 		res.cookie('refreshToken', tokens.refreshToken, {
-			maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
+			maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
 			httpOnly: true
 		})
 
 		res.cookie('accessToken', tokens.accessToken, {
-			maxAge: 500 * 60 * 1000, // 500 минут
+			maxAge: 500 * 60 * 1000, // 500 minutes (temp)
 			httpOnly: true
 		})
 

@@ -9,7 +9,6 @@ export const getUserChats = async (req, res, next) => {
 		const limit = Number(req.query.limit) || 10
 		const skip = (page - 1) * limit
 
-		// Используем агрегацию для получения чатов с последним сообщением
 		const aggregation = await Chat.aggregate([
 			{
 				$match: {
@@ -97,7 +96,7 @@ export const createOrGetChat = async (req, res, next) => {
 		const { members } = req.body
 
 		if (!members || members.length < 2) {
-			throw new Error('Для создания чата необходимо 2 участника')
+			throw new Error('Invalid members array')
 		}
 
 		const existingChat = await Chat.findOne({
@@ -135,7 +134,6 @@ export const createOrGetChat = async (req, res, next) => {
 			options: { lean: true }
 		})
 
-		// Получаем информацию о собеседнике для нового чата
 		const interlocutor = populatedChat.members.find(
 			member => member._id.toString() !== req.user._id.toString()
 		)
@@ -158,7 +156,7 @@ export const createGroupChat = async (req, res, next) => {
 		const { title, members } = req.body
 
 		if (!members) {
-			throw new Error('Для создания группы необходим хотя бы один участник')
+			throw new Error('Invalid members array')
 		}
 
 		const existingChat = await Chat.findOne({
@@ -191,7 +189,7 @@ export const joinChat = async (req, res, next) => {
 
 		if (!chat) {
 			res.status(404)
-			throw new Error('Чат не найден')
+			throw new Error('Chat not found')
 		}
 
 		if (chat.members.includes(userId)) {
@@ -215,7 +213,7 @@ export const getChatById = async (req, res, next) => {
 
 		if (!chat) {
 			res.status(404)
-			throw new Error('Чат не найден')
+			throw new Error('Chat not found')
 		}
 
 		const isMember = chat.members.some(
@@ -224,7 +222,7 @@ export const getChatById = async (req, res, next) => {
 
 		if (!isMember) {
 			res.status(403)
-			throw new Error('У вас нет доступа к этому чату')
+			throw new Error('You do not have access to this chat')
 		}
 
 		const interlocutor = chat.members.find(
@@ -255,12 +253,12 @@ export const getChatMessages = async (req, res, next) => {
 
 		if (!chat) {
 			res.status(404)
-			throw new Error('Чат не найден')
+			throw new Error('Chat not found')
 		}
 
 		if (!chat.members.includes(userId)) {
 			res.status(403)
-			throw new Error('У вас нет доступа к этому чату')
+			throw new Error('You do not have access to this chat')
 		}
 
 		const totalCount = await Message.countDocuments({ chat: chatId })

@@ -33,6 +33,7 @@ export const useSocketChat = () => {
 			socket.off('newMessage', handleNewMessage)
 			socket.off('connect_error')
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [socket, handleNewMessage])
 
 	const leaveChat = useCallback(

@@ -13,7 +13,6 @@
 }
 
 .button:hover:not(.inactive) {
-	opacity: 0.8;
 	transform: translateY(-1px);
 }
 

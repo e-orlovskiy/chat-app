@@ -1,4 +1,3 @@
-// ChatList.js
 import cn from 'classnames'
 import { RiUserSearchFill, RiUserSharedFill } from 'react-icons/ri'
 import { useChatList } from '../../hooks/useChatList'

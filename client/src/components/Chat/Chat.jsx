@@ -1,4 +1,3 @@
-// components/Chat/Chat.js
 import cn from 'classnames'
 import { BsLayoutSidebarInset } from 'react-icons/bs'
 import defaultAvatar from '../../assets/default-avatar.avif'

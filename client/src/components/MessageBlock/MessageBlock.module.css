@@ -53,7 +53,7 @@
 }
 
 .message.own .message__text-container {
-	background: var(--color-my-message-bg);
+	background-color: var(--color-my-message-bg);
 }
 
 .message.own .message__text-container::after {

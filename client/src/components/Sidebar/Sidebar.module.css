@@ -68,6 +68,6 @@
 .underline {
 	width: 100%;
 	height: 1.5px;
-	background: var(--color-text-tertiary);
+	background: var(--color-bg-tertiary);
 	margin-bottom: var(--offset-m);
 }
